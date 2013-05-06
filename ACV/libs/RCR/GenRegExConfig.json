@@ -1,0 +1,11 @@
+{
+    "className":"GenRegExCodeRule",
+    "classFile":"file://./GenRegExCodeRule.php",
+    "rules":{
+        "doubleNot":{
+            "regEx":"/\\!\\!/",
+            "description":"Use of double negative.",
+            "level":1
+        }
+    }
+}

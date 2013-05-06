@@ -1,0 +1,17 @@
+Automated Code Reviewer: a PHP tool to review PHP code
+//todo: grow copy
+
+copyright: Copyright 2012 Web Courseworks, Ltd.
+license:   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0
+
+
+Install / Setup:
+    //todo: this
+Configuration / Options:
+    //todo: this
+Command-line Arguments:
+    -c <config file path>
+        Force the use of a different config file. "config.json" by default.
+    //todo:this
+Tutorial:
+    //todo: this

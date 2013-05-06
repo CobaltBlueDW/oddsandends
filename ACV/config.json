@@ -1,0 +1,8 @@
+{
+    "libDir":"./libs",
+    "workDir":"./work",
+    "reviewTargets":"file://reviewTargets.json",
+    "codeReviewers":{
+            "RegExCodeReview":"file://./libs/RCR/config.json"
+    }
+}

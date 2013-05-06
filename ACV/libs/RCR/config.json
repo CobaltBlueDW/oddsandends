@@ -1,0 +1,32 @@
+{
+    "className":"RegExCodeReviewer",
+    "classFile":"file://./RegExCodeReviewer.php",
+    "codeRules":{
+	"NoFuncCodeRule":"file://./NoFuncConfig.json",
+        "GenRegExCodeRule":"file://./GenRegExConfig.json",
+        "PHPTagsCodeRule":{
+            "className":"PHPTagsCodeRule",
+            "classFile":"file://./PHPTagsCodeRule.php"
+        },
+        "VarNameCodeRule":{
+            "className":"VarNameCodeRule",
+            "classFile":"file://./VarNameCodeRule.php",
+            "exceptions":{
+                "$_SESSION":true,
+                "$_POST":true,
+                "$_GET":true,
+                "$CFG":true,
+                "$ADMIN":true,
+                "$SESSION":true,
+                "$USER":true,
+                "$DB":true,
+                "$SITE":true,
+                "$THEME":true,
+                "$COURSE":true,
+                "$PAGE":true,
+                "$ME":true,
+                "$INSTALL":true
+            }
+        }
+    }
+}
