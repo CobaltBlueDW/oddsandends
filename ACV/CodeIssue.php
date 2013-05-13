@@ -46,8 +46,8 @@ class CodeIssue {
      * @param string $code      A snippet of the code in quetions
      * @param string $modCode   If the code was modified, a snippet of the revised code
      */
-    function __construct($reviewer, $fileName, $issueLevel, $issueCode, $modified, $description,
-                         $lineNumber, $charNumber, $code, $modCode) {
+    function __construct($reviewer, $fileName, $issueLevel, $issueCode, $modified=false, $description='',
+                         $lineNumber=0, $charNumber=0, $code='', $modCode='') {
         $this->reviewer = $reviewer;
         $this->fileName = $fileName;
         $this->issueLevel = $issueLevel;

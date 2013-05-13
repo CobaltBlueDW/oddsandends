@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<phpdoc>
+    <title>Test</title>
+    <parser>
+        <target>../../work</target>
+        <markers>
+            <item>TODO</item>
+            <item>todo</item>
+            <item>FIXME</item>
+        </markers>
+        <extensions>
+            <extension>php</extension>
+        </extensions>
+        <visibility></visibility>
+    </parser>
+    <transformer>
+        <target>../../work</target>
+    </transformer>
+    <logging>
+        <level>debug</level>
+        <paths>
+            <default>../../work/default.log</default>
+            <errors>../../work/errors.log</errors>
+        </paths>
+    </logging>
+    <transformations>
+        <template name="checkstyle" />
+    </transformations>
+    <files>
+        <directory>../../test</directory>
+    </files>
+</phpdoc>

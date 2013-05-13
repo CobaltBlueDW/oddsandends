@@ -95,7 +95,7 @@ require_once('CodeRule.php');
 require_once('CodeReviewer.php');
 
 //handle console command args
-$assocArgs = getopt("c:");
+$assocArgs = getopt("c:t:e:r:");
 
 //consume base properties file
 $configPath = 'config.json';

@@ -3,6 +3,34 @@
     "workDir":"./work",
     "reviewTargets":"file://reviewTargets.json",
     "codeReviewers":{
-            "RegExCodeReview":"file://./libs/RCR/config.json"
+            "RegExCodeReview":"file://./libs/RCR/config.json",
+            "CodeSnifferCodeReviewer":{
+                "className":"CodeSnifferCodeReviewer",
+                "classFile":"file://./libs/CodeSniffer/CodeSnifferCodeReviewer.php"
+            },
+            "ReformatCodeReviewer":{
+                "className":"ReformatCodeReviewer",
+                "classFile":"file://./libs/phpStylist/ReformatCodeReviewer.php"
+            },
+            "LintModeCodeReviewer":{
+                "className":"LintModeCodeReviewer",
+                "classFile":"file://./libs/phpLintMode/LintModeCodeReviewer.php"
+            },
+            "PHPDocCodeReviewer":{
+                "className":"PHPDocCodeReviewer",
+                "classFile":"file://./libs/phpDoc/PHPDocCodeReviewer.php"
+            },
+            "PHPMDCodeReviewer":{
+                "className":"PHPMDCodeReviewer",
+                "classFile":"file://./libs/phpmd/PHPMDCodeReviewer.php"
+            }
+    },
+    "allowedReviews":{
+        "RegExCodeReview": false,
+        "CodeSnifferCodeReviewer": false,
+        "ReformatCodeReviewer": false,
+        "LintModeCodeReviewer": false,
+        "PHPDocCodeReviewer": false,
+        "PHPMDCodeReviewer": true
     }
 }

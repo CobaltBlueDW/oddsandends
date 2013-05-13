@@ -1,0 +1,10 @@
+; This file is populated by the drupal.org packaging script with date and
+; version information for downloadable releases.
+name = Drupal Code Sniffer
+
+; Information added by drupal.org packaging script on 2012-06-29
+version = "7.x-1.0-beta1"
+core = "7.x"
+project = "drupalcs"
+datestamp = "1340985100"
+
