@@ -12,6 +12,17 @@ class PHPDocCodeReviewer extends CodeReviewer{
         parent::__construct($defaultOptions);
     }
     
+    function genDocs($options=null){
+        global $config;
+        
+        if (!isset($options)) $options = $this->defaultOptions;
+        if (!isset($options->docsDir)) throw new Exception("Required property of PHPDocCodeReviewer item, docsDir is missing.");
+        if (!isset($options->targetDir)) throw new Exception("Required property of PHPDocCodeReviewer item, targetDir is missing.");
+        if (!is_dir($options->docsDir)) mkdir($options->docsDir);
+        
+        exec('php "'.$config->libDir.'/phpDoc/bin/phpdoc.php" -d "'.$options->targetDir.'" -t "'.$options->docsDir.'" ');
+    }
+    
     /**
      * Reviews a file potentially modifying it, and returning issues
      * 
@@ -67,6 +78,10 @@ class PHPDocCodeReviewer extends CodeReviewer{
         }
  
         return $issues;
+    }
+    
+    function postReview($options=null){
+        $this->genDocs($options);
     }
     
 }

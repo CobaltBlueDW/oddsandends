@@ -26,6 +26,20 @@ abstract class CodeReviewer {
     }
     
     /**
+     * A hook for the CodeReviewer, which is executed once before the review process
+     *  
+     * @param type $options 
+     */
+    function preReview($options=null){}
+    
+    /**
+     * A hook for the CodeReviewer, which is executed once after the review process
+     * 
+     * @param type $options 
+     */
+    function postReview($options=null){}
+    
+    /**
      * Reviews a file potentially modifying it, and returning issues
      * 
      * @param type $fileResource

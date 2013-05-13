@@ -4,6 +4,8 @@ Automated Code Reviewer: a PHP tool to review PHP code
 copyright: Copyright 2012 Web Courseworks, Ltd.
 license:   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0
 
+Required:
+        php_xsl(the xsl library for php) for phpDocs to generate documentations
 
 Install / Setup:
     //todo: this
@@ -12,6 +14,25 @@ Configuration / Options:
 Command-line Arguments:
     -c <config file path>
         Force the use of a different config file. "config.json" by default.
+
+        Note: you can list multiple config files at once, like: -c <file1> -c <file2>
+        If you do, they will be merged together at the root level, with the later files
+        over-riding the options of the previous files.
+        This can be useful for defining config files for a specific task, then joining
+        then joining together the config files of all tasks you'd like run.
+
+        WARNING: currently the multiple file merge is only a shallow merge.
+
+    -t <target file path>
+        Sets the files to be processed.  Targets may be directories or files.
+        If a '.json' file is the sole command-line target, it is assumed to be A
+        config file with a list of targets.
+
+    -r <CodeReviewer>
+        Sets which CodeReviewers will be used.
+
+    -e
+        Echo the config file being used.  Useful for trouble-shooting and such.
     //todo:this
 Tutorial:
     //todo: this

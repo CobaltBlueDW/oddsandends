@@ -1,0 +1,10 @@
+{
+    "allowedReviews":{
+        "RegExCodeReview": false,
+        "CodeSnifferCodeReviewer": false,
+        "ReformatCodeReviewer": false,
+        "LintModeCodeReviewer": false,
+        "PHPDocCodeReviewer": false,
+        "PHPMDCodeReviewer": false
+    }
+}

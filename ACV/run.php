@@ -64,6 +64,22 @@ function unpackJSON($ref, $curPath='./'){
 }
 
 /**
+ * Returns an object that is the join of $obj2 onto $obj1
+ * $obj1 keys will be overwritten by $obj2 if there is a collision.
+ * 
+ * @param object $obj1    join object 1
+ * @param object $obj2    join object 2
+ * @return object   resulting combined object 
+ */
+function objJoin($obj1, $obj2){
+    foreach($obj2 as $key=>$value){
+        $obj1->$key = $value;
+    }
+    
+    return $obj1;
+}
+
+/**
  *  Flattens a directory structure into a list of file paths
  * 
  * 
@@ -87,6 +103,55 @@ function compileFileList($dirRef, $curPath='./'){
     
     return $newArray;
 }
+
+/**
+ * Writes the object to the specified file in JSON format
+ * 
+ * @param type $filePath
+ * @param type $obj 
+ */
+function storeJSON($filePath, $obj){
+    file_put_contents($filePath, json_encode($obj));
+}
+function storeXML($filePath, $obj){
+    echo "not implemented yet";
+}
+function storeCSV($filePath, $array, $createHeaderRow = true){
+    $file = fopen($filePath, 'w');
+    if ($createHeaderRow) {
+        $str = '';
+        foreach($array[0] as $key=>$value){
+            $str = $str.'"'.$key.'",';
+        }
+        $str = substr($str, 0, strlen($str)-1)."\n";
+        fwrite($file, $str);
+    }
+    foreach($array as $line){
+        $str = '';
+        foreach($line as $key=>$value){
+            if (is_string($value)) {
+                $str = $str.'"'.addslashes($value).'",';
+            } else {
+                $str = $str.$value.',';
+            }
+        }
+        $str = substr($str, 0, strlen($str)-1)."\n";
+        fwrite($file, $str);
+    }
+}
+
+/**
+ * Writes the object to the specified file in text (i.e. toString) format
+ * 
+ * @param type $filePath
+ * @param type $obj 
+ */
+function storeText($filePath, $obj){
+    $file = fopen($filePath, 'w');
+    foreach($obj as $issue){
+        fwrite($file, $issue."\n");
+    }
+}
  
  
 //include base libs
@@ -97,10 +162,20 @@ require_once('CodeReviewer.php');
 //handle console command args
 $assocArgs = getopt("c:t:e:r:");
 
-//consume base properties file
+//consume base properties files
 $configPath = 'config.json';
-if (isset($assocArgs['c'])) $configPath = $assocArgs['c'];
-$config = unpackJSON($configPath);
+if (isset($assocArgs['c'])){
+    if (is_array($assocArgs['c'])){
+        $config = new stdClass();
+        foreach($assocArgs['c'] as $path){
+            $config = objJoin($config, unpackJSON($path));
+        }
+    } else {
+        $config = unpackJSON($assocArgs['c']);
+    }
+} else {
+    $config = unpackJSON($configPath);
+}
 
 //apply console properties to config
 if (isset($assocArgs['t'])) $config->reviewTargets = $assocArgs['t'];
@@ -168,6 +243,11 @@ for($i=0; $i < count($targetList); $i++){
 }
 file_put_contents($config->workDir."/target_list.json", json_encode($targetList));
 
+//run preReview
+foreach($codeReviewers as $reviewer){
+    $reviewer->preReview();
+}
+
 //run automation
 $issues = array();
 foreach($targetList as $target){
@@ -176,8 +256,35 @@ foreach($targetList as $target){
     }
 }
 
-foreach($issues as $issue){
-    echo $issue."\n";
+//run postReview
+foreach($codeReviewers as $reviewer){
+    $reviewer->postReview();
+}
+
+//generate output
+if (!isset($config->output) || !isset($config->output->reportFile) || $config->output->reportFile == false){
+    foreach($issues as $issue){
+        echo $issue."\n";
+    }
+} else {
+    if (!isset($config->output->reportFormat)) $config->output->reportFormat = 'json';
+    switch($config->output->reportFormat){
+        case 'text':
+            storeText($config->output->reportFile, $issues);
+            break;
+        
+        case 'csv':
+            storeCSV($config->output->reportFile, $issues);
+            break;
+        
+        case 'xml':
+            storeXML($config->output->reportFile, $issues);
+            break;
+        
+        case 'json':
+        default:
+            storeJSON($config->output->reportFile, $issues);  
+    }
 }
 
 ?>

@@ -18,7 +18,10 @@
             },
             "PHPDocCodeReviewer":{
                 "className":"PHPDocCodeReviewer",
-                "classFile":"file://./libs/phpDoc/PHPDocCodeReviewer.php"
+                "classFile":"file://./libs/phpDoc/PHPDocCodeReviewer.php",
+                "docsDir":"./docs",
+                "targetDir": "./test",
+                "genDocs":true
             },
             "PHPMDCodeReviewer":{
                 "className":"PHPMDCodeReviewer",
@@ -32,5 +35,9 @@
         "LintModeCodeReviewer": false,
         "PHPDocCodeReviewer": false,
         "PHPMDCodeReviewer": true
+    },
+    "output":{
+        "reportFile":"./work/acr_report.json",
+        "reportFormat":"json"
     }
 }
