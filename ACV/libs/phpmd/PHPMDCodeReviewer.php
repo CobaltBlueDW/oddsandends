@@ -40,7 +40,7 @@ class PHPMDCodeReviewer extends CodeReviewer{
             $break = strpos($line, "\t");
             $message = substr($line, $break+1);
             $front = substr($line, 0, $break);
-            $lineNumber = substr($front, strrpos($front,':'));
+            $lineNumber = substr($front, strrpos($front,':')+1);
             
             $issues []= new CodeIssue(
                 $this->reviewer,

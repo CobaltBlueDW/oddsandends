@@ -104,62 +104,11 @@ function compileFileList($dirRef, $curPath='./'){
     return $newArray;
 }
 
-/**
- * Writes the object to the specified file in JSON format
- * 
- * @param type $filePath
- * @param type $obj 
- */
-function storeJSON($filePath, $obj){
-    file_put_contents($filePath, json_encode($obj));
-}
-function storeXML($filePath, $obj){
-    require_once('./XMLSerializer.php');
-    
-    file_put_contents($filePath, XMLSerializer::generateXML($obj));
-}
-function storeCSV($filePath, $array, $createHeaderRow = true){
-    $file = fopen($filePath, 'w');
-    if ($createHeaderRow) {
-        $str = '';
-        foreach($array[0] as $key=>$value){
-            $str = $str.'"'.$key.'",';
-        }
-        $str = substr($str, 0, strlen($str)-1)."\n";
-        fwrite($file, $str);
-    }
-    foreach($array as $line){
-        $str = '';
-        foreach($line as $key=>$value){
-            if (is_string($value)) {
-                $str = $str.'"'.addslashes($value).'",';
-            } else {
-                $str = $str.$value.',';
-            }
-        }
-        $str = substr($str, 0, strlen($str)-1)."\n";
-        fwrite($file, $str);
-    }
-}
 
-/**
- * Writes the object to the specified file in text (i.e. toString) format
- * 
- * @param type $filePath
- * @param type $obj 
- */
-function storeText($filePath, $obj){
-    $file = fopen($filePath, 'w');
-    foreach($obj as $issue){
-        fwrite($file, $issue."\n");
-    }
-}
- 
- 
 //include base libs
-require_once('CodeIssue.php');
-require_once('CodeRule.php');
-require_once('CodeReviewer.php');
+require_once('core/CodeIssue.php');
+require_once('core/CodeRule.php');
+require_once('core/CodeReviewer.php');
 
 //handle console command args
 $assocArgs = getopt("c:t:e:r:");
@@ -201,7 +150,7 @@ if (is_string($config->reviewTargets) &&
 if (is_string($config->reviewTargets)){
     $tempObj = new stdClass();
     $tempObj->soloTarget = $config->reviewTargets;
-    $config->reviewTarget = $tempObj;
+    $config->reviewTargets = $tempObj;
 }
 
 if (!isset($config->codeReviewers)) throw new Exception("Required property CodeReviewers is missing.");
@@ -250,43 +199,48 @@ foreach($codeReviewers as $reviewer){
     $reviewer->preReview();
 }
 
+//setup output/reporter
+if (!isset($config->output->reportFormat)) $config->output->reportFormat = 'json';
+switch($config->output->reportFormat){
+    case 'text':
+        require_once('core/TextReporter.php');
+        $reporter = new TextReporter();
+        break;
+
+    case 'csv':
+        require_once('core/CSVReporter.php');
+        $reporter = new CSVReporter();
+        break;
+
+    case 'xml':
+        require_once('core/XMLReporter.php');
+        $reporter = new XMLReporter();
+        break;
+
+    case 'json':
+    default:
+        require_once('core/JSONReporter.php');
+        $reporter = new JSONReporter();  
+}
+if (isset($config->output->reportFile)) {
+    $reporter->open($config->output->reportFile);
+} else {
+    $reporter->open();
+}
+
 //run automation
-$issues = array();
 foreach($targetList as $target){
     foreach($codeReviewers as $reviewer){
-        $issues = array_merge( $issues, $reviewer->reviewFile($target) );
+        $reporter->push( $reviewer->reviewFile($target) );
     }
 }
+
+$reporter->close();
 
 //run postReview
 foreach($codeReviewers as $reviewer){
     $reviewer->postReview();
 }
 
-//generate output
-if (!isset($config->output) || !isset($config->output->reportFile) || $config->output->reportFile == false){
-    foreach($issues as $issue){
-        echo $issue."\n";
-    }
-} else {
-    if (!isset($config->output->reportFormat)) $config->output->reportFormat = 'json';
-    switch($config->output->reportFormat){
-        case 'text':
-            storeText($config->output->reportFile, $issues);
-            break;
-        
-        case 'csv':
-            storeCSV($config->output->reportFile, $issues);
-            break;
-        
-        case 'xml':
-            storeXML($config->output->reportFile, $issues);
-            break;
-        
-        case 'json':
-        default:
-            storeJSON($config->output->reportFile, $issues);  
-    }
-}
 
-?>
+

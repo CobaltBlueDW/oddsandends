@@ -5,6 +5,7 @@
         "eval":{"funcName":"eval", "reason":"Risky"},
         "exec":{"funcName":"exec", "reason":"Risky"},
         "system":{"funcName":"system", "reason":"Risky"},
+        "passthru":{"funcName":"passthru", "reason":"Risky"},
 
         "call_user_method":{"funcName":"call_user_method", "reason":"Deprecated"},
         "call_user_method_array":{"funcName":"call_user_method_array", "reason":"Deprecated"},

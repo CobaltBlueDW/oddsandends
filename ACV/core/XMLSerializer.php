@@ -5,6 +5,16 @@
 class XMLSerializer {
 
     public static function generateXML($obj, $node_block='nodes', $node_name='node'){
+        if (is_array($obj)) return self::generateXmlFromArray($obj, $node_block, $node_name);
+        if (is_object($obj)) return self::generateXmlFromObj($obj, $node_block, $node_name);
+        
+        //if it's not an object or an array why are you putting it into an xml file
+        //oh well, in it goes...
+        $temp = array($obj);
+        return self::generateXmlFromArray($temp, $node_block, $node_name);
+    }
+    
+    public static function generateValidXML($obj, $node_block='nodes', $node_name='node'){
         if (is_array($obj)) return self::generateValidXmlFromArray($obj, $node_block, $node_name);
         if (is_object($obj)) return self::generateValidXmlFromObj($obj, $node_block, $node_name);
         
@@ -14,7 +24,7 @@ class XMLSerializer {
         return self::generateValidXmlFromArray($temp, $node_block, $node_name);
     }
     
-    public static function generateValidXmlFromObj(stdClass $obj, $node_block='nodes', $node_name='node') {
+    public static function generateValidXmlFromObj($obj, $node_block='nodes', $node_name='node') {
         $arr = get_object_vars($obj);
         return self::generateValidXmlFromArray($arr, $node_block, $node_name);
     }
@@ -29,6 +39,11 @@ class XMLSerializer {
         return $xml;
     }
 
+    public static function generateXmlFromObj($obj, $node_block='nodes', $node_name='node') {
+        $arr = get_object_vars($obj);
+        return self::generateXmlFromArray($arr, $node_name);
+    }
+    
     private static function generateXmlFromArray($array, $node_name) {
         $xml = '';
 
