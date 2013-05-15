@@ -114,7 +114,9 @@ function storeJSON($filePath, $obj){
     file_put_contents($filePath, json_encode($obj));
 }
 function storeXML($filePath, $obj){
-    echo "not implemented yet";
+    require_once('./XMLSerializer.php');
+    
+    file_put_contents($filePath, XMLSerializer::generateXML($obj));
 }
 function storeCSV($filePath, $array, $createHeaderRow = true){
     $file = fopen($filePath, 'w');

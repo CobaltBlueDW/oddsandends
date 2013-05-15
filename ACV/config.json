@@ -33,11 +33,11 @@
         "CodeSnifferCodeReviewer": false,
         "ReformatCodeReviewer": false,
         "LintModeCodeReviewer": false,
-        "PHPDocCodeReviewer": false,
-        "PHPMDCodeReviewer": true
+        "PHPDocCodeReviewer": true,
+        "PHPMDCodeReviewer": false
     },
     "output":{
-        "reportFile":"./work/acr_report.json",
-        "reportFormat":"json"
+        "reportFile":"./work/acr_report.txt",
+        "reportFormat":"text"
     }
 }
