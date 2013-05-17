@@ -25,7 +25,14 @@
             },
             "PHPMDCodeReviewer":{
                 "className":"PHPMDCodeReviewer",
-                "classFile":"file://./libs/phpmd/PHPMDCodeReviewer.php"
+                "classFile":"file://./libs/phpmd/PHPMDCodeReviewer.php",
+                "rulesets":{
+                    "codesize": true,
+                    "controversial": false,
+                    "design": false,
+                    "naming": false,
+                    "unusedcode": false
+                }
             }
     },
     "allowedReviews":{
@@ -37,7 +44,7 @@
         "PHPMDCodeReviewer": true
     },
     "output":{
-        "reportFile":"./work/acr_report.xml",
-        "reportFormat":"xml"
+        "reportFile":"./work/acr_report.json",
+        "reportFormat":"json"
     }
 }
