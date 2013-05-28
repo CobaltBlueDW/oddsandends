@@ -38,7 +38,9 @@ class CodeSnifferCodeReviewer extends CodeReviewer{
         if (!isset($options)) $options = $this->defaultOptions;
         if (!is_dir($config->workDir)) throw new Exception("Working directory ({$config->workDir}) was not found.");
         
-        exec('php "'.$config->libDir.'/CodeSniffer/phpcs.php" --severity=1 --standard=moodle --report=csv --report-file="'.$config->workDir.'/phpcs_report.csv" "'.$filePath.'"');
+        if (!isset($options->standard)) $options->standard = 'moodle';
+        
+        exec('php "'.$config->libDir.'/CodeSniffer/phpcs.php" --severity=1 --standard="'.$options->standard.'" --report=csv --report-file="'.$config->workDir.'/phpcs_report.csv" "'.$filePath.'"');
         
         if (!is_file($config->workDir.'/phpcs_report.csv')) throw new Exception("Failed to find generated report.  Report possibly faield to generate.");
         

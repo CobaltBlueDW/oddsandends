@@ -6,7 +6,8 @@
             "RegExCodeReview":"file://./libs/RCR/config.json",
             "CodeSnifferCodeReviewer":{
                 "className":"CodeSnifferCodeReviewer",
-                "classFile":"file://./libs/CodeSniffer/CodeSnifferCodeReviewer.php"
+                "classFile":"file://./libs/CodeSniffer/CodeSnifferCodeReviewer.php",
+                "standard":"WCW"
             },
             "ReformatCodeReviewer":{
                 "className":"ReformatCodeReviewer",
@@ -21,27 +22,27 @@
                 "classFile":"file://./libs/phpDoc/PHPDocCodeReviewer.php",
                 "docsDir":"./docs",
                 "targetDir": "./test",
-                "genDocs":true
+                "genDocs":false
             },
             "PHPMDCodeReviewer":{
                 "className":"PHPMDCodeReviewer",
                 "classFile":"file://./libs/phpmd/PHPMDCodeReviewer.php",
                 "rulesets":{
                     "codesize": true,
-                    "controversial": false,
-                    "design": false,
-                    "naming": false,
-                    "unusedcode": false
+                    "controversial": true,
+                    "design": true,
+                    "naming": true,
+                    "unusedcode": true
                 }
             }
     },
     "allowedReviews":{
         "RegExCodeReview": false,
-        "CodeSnifferCodeReviewer": false,
+        "CodeSnifferCodeReviewer": true,
         "ReformatCodeReviewer": false,
         "LintModeCodeReviewer": false,
         "PHPDocCodeReviewer": false,
-        "PHPMDCodeReviewer": true
+        "PHPMDCodeReviewer": false
     },
     "output":{
         "reportFile":"./work/acr_report.json",
