@@ -46,7 +46,7 @@
     <rule ref="Squiz.WhiteSpace.ScopeClosingBrace"/>
     <rule ref="Squiz.WhiteSpace.ScopeKeywordSpacing"/>
     <rule ref="Squiz.WhiteSpace.SemicolonSpacing"/>
-    <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/>
+    <!-- <rule ref="Squiz.WhiteSpace.SuperfluousWhitespace"/> -->
 
     <rule ref="Zend.Files.ClosingTag"/>
 
@@ -62,11 +62,11 @@
     
     
     <!-- moodle sniffs -->
-    <rule ref="moodle.Commenting.InlineComment"/>
+    <!-- <rule ref="moodle.Commenting.InlineComment"/> -->
     
     <rule ref="moodle.ControlStructures.ControlSignature"/>
     
-    <rule ref="moodle.Files.BoilerplateComment"/>
+    <!-- <rule ref="moodle.Files.BoilerplateComment"/> -->
     <rule ref="moodle.Files.LineLength"/>
     
     <rule ref="moodle.NamingConventions.ValidFunctionName"/>

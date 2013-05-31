@@ -34,7 +34,7 @@ class Foo {
         </example>
     </rule>
 
-    <rule name="CamelCaseClassName"
+<!--    <rule name="CamelCaseClassName"
           since="0.2"
           message = "The class {0} is not named in CamelCase."
           class="PHP_PMD_Rule_Controversial_CamelCaseClassName"
@@ -140,5 +140,5 @@ class ClassName {
 }
             ]]>
         </example>
-    </rule>
+    </rule> -->
 </ruleset>

@@ -25,7 +25,7 @@ method entry.  The decision points are 'if', 'while', 'for', and 'case labels'. 
         </description>
         <priority>3</priority>
         <properties>
-            <property name="reportLevel" description="The Cyclomatic Complexity reporting threshold"  value="10"/>
+            <property name="reportLevel" description="The Cyclomatic Complexity reporting threshold"  value="20"/>
             <property name="showClassesComplexity"
                       description="Indicate if class average violation should be added to the report"
                       value="true"/>
@@ -113,7 +113,7 @@ too much.  Try to reduce the method size by creating helper methods and removing
         </description>
         <priority>3</priority>
         <properties>
-            <property name="minimum" description="The method size reporting threshold" value="100"/>
+            <property name="minimum" description="The method size reporting threshold" value="250"/>
         </properties>
         <example>
             <![CDATA[
@@ -344,7 +344,7 @@ order to reduce its complexity and find a way to have more fine grained objects.
         </description>
         <priority>3</priority>
         <properties>
-            <property name="maxmethods" description="The method count reporting threshold " value="10"/>
+            <property name="maxmethods" description="The method count reporting threshold " value="20"/>
         </properties>
     </rule>
 
