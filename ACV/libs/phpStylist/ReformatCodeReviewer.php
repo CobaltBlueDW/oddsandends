@@ -61,7 +61,12 @@ class ReformatCodeReviewer extends CodeReviewer{
         
         if (!is_file($config->workDir.'/phpstylist_temp.php')) throw new Exception("Failed to find generated file.  File possibly failed to generate.");
         
-        @exec('php -l "'.$config->workDir.'/phpstylist_temp.php"', $result);
+        //archive first
+        $fileName = substr($filePath, strrpos($filePath,'/')+1);
+        $fileName = substr($fileName, 0, strrpos($fileName, '.'));
+        $newFilePath = self::archiveFile($config->workDir.'/phpstylist_temp.php', $fileName);
+        
+        @exec('php -l "'.$newFilePath, $result);
         
         $issues = array();
         
@@ -80,14 +85,9 @@ class ReformatCodeReviewer extends CodeReviewer{
                     null,
                     null
                 );
-                rename($config->workDir.'/phpstylist_temp.php', $filePath);
+                rename($newFilePath, $filePath);
             } 
         } else {    //errors found
-            //store erronious file
-            $fileName = substr($filePath, strrpos($filePath,'/')+1);
-            $fileName = substr($fileName, 0, strrpos($fileName, '.'));
-            self::archiveFile($config->workDir.'/phpstylist_temp.php', $fileName);
-            
             //create issues for errors
             foreach($result as $key=>$value){
                 if($key==0) continue;

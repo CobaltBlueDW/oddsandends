@@ -38,8 +38,8 @@
     },
     "allowedReviews":{
         "RegExCodeReview": false,
-        "CodeSnifferCodeReviewer": true,
-        "ReformatCodeReviewer": false,
+        "CodeSnifferCodeReviewer": false,
+        "ReformatCodeReviewer": true,
         "LintModeCodeReviewer": false,
         "PHPDocCodeReviewer": false,
         "PHPMDCodeReviewer": false

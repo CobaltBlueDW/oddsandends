@@ -17,63 +17,33 @@
 processBatch();
 
 
-function parseFile($download = false) {
-  global $HTTP_POST_FILES;
+function parseFile($download = false, $config) {
   
-  $code = "";
-  $stylist = new phpStylist();
-  if ((isset($_REQUEST['file']) && $_REQUEST['file']!="") || (isset($HTTP_POST_FILES['file']['tmp_name']) && $HTTP_POST_FILES['file']['tmp_name'] != "none" && $HTTP_POST_FILES['file']['tmp_name'] != "")) {
-    $file = isset($_REQUEST['file']) ? $_REQUEST['file'] : $HTTP_POST_FILES['file']['tmp_name'];
-    $code = loadFile($file);
-    if (isset($_REQUEST["iso8859"]) && $_REQUEST["iso8859"]!="off" && !isDownload()) {
-      $code = utf8_encode($code);
+    $code = "";
+    $stylist = new phpStylist();
+    if (!isset($config->file) || $config->file=="" ) return false;
+
+    $code = loadFile($config->file);
+    if (isset($config->iso8859)) {
+        $code = utf8_encode($code);
     }
-  }
-  elseif (isset($_REQUEST["ta"]) && $_REQUEST["ta"] != '') {
-    $code = stripslashes($_REQUEST["ta"]);
-    if (isset($_REQUEST["iso8859"]) && $_REQUEST["iso8859"]!="off" && isDownload()) {
-      $code = utf8_decode($code);
+  
+    if (!empty($code)) {
+        $stylist->options = $config;
+
+        if (isset($config->indent_with_tabs)) {
+            $stylist->indent_char = "\t";
+        }
+        if (!empty($config->indent_size)) {
+            $stylist->indent_size = $config->indent_size;
+        }
+        if (strpos($code, '<?') === false) {
+            $code = '<?php ' . $code . ' ?>';
+        }
+        $formatted = $stylist->formatCode($code);
     }
-  }
-  if (!empty($code)) {
-    foreach ($_REQUEST as $k => $v) {
-      if (isset($stylist->options[strtoupper($k)])) {
-        $stylist->options[strtoupper($k)] = $v != "off";
-      }
-    }
-    if (isset($_REQUEST["indent_with_tabs"]) && $_REQUEST["indent_with_tabs"] != "off") {
-      $stylist->indent_char = "\t";
-    }
-    if (isset($_REQUEST["indent_size"]) && $_REQUEST["indent_size"] != "" && $_REQUEST["indent_size"] != "null") {
-      $stylist->indent_size = $_REQUEST["indent_size"];
-    }
-    if (strpos($code, '<?') === false) {
-      $code = '<?php ' . $code . ' ?' . '>';
-    }
-    $formatted = $stylist->formatCode($code);
-    $highlight = highlight_string($formatted, true);
-    if (isset($HTTP_POST_FILES['file']['tmp_name']) && file_exists($HTTP_POST_FILES['file']['tmp_name'])) {
-      unlink($HTTP_POST_FILES['file']['tmp_name']);
-    }
-    $nowrap   = isset($_REQUEST["nowrap"]) && $_REQUEST["nowrap"] == 'on' ? "nowrap" : "";
-    $tawrap   = $nowrap == "" ? "" : "wrap='off' ";
-    $display  = isset($_REQUEST["textarea"]) && $_REQUEST["textarea"] == 'on' ? "" : "style='display: none;'";
-    $textarea = "<tr id='tx' $display><td valign=top><textarea $tawrap style='width: 100%; height: 100%;' id='ta' name='ta'>" . htmlspecialchars($formatted) . "</textarea></td></tr>";
-    $display  = isset($_REQUEST["textarea"]) && $_REQUEST["textarea"] == 'on' ? "style='display: none;'" : "";
-    $frame    = "<tr id='hl' $display><td valign=top $nowrap>$highlight</td></tr>";
-  }
-  else {
-    $nowrap   = isset($_REQUEST["nowrap"]) && $_REQUEST["nowrap"] == 'on' ? "nowrap" : "";
-    $tawrap   = $nowrap == "" ? "" : "wrap='off' ";
-    $textarea = "<tr id='tx'><td valign=top><textarea $tawrap style='width: 100%; height=100%;' id='ta' name='ta'></textarea></td></tr>";
-    $frame    = "<tr id='hl' style='display: none;'><td valign=top $nowrap></td></tr>";
-  }
-  if ($download) {
-    return isset($formatted) ? $formatted : "";
-  }
-  else {
-    return $textarea . $frame;
-  }
+  
+    return $formatted;
 }
 
 function processBatch() {
@@ -89,9 +59,12 @@ function processBatch() {
   
   //get default config settings
   $config = json_decode(file_get_contents('config.json'));
-  foreach($config as $key=>$value){
+  /*foreach($config as $key=>$value){
       $_REQUEST[$key] = $value;
-  }
+  }*/
+  
+  //supress notices (because I'm lazy)
+  error_reporting(E_ERROR | E_WARNING | E_PARSE);
   
   foreach($options as $index=>$option) {
     if($option=="--help") {
@@ -140,24 +113,21 @@ function processBatch() {
       exit;
     }
     if($index==1) {
-      $_REQUEST["file"] = $option;
+      $config->file = $option;
+    }elseif($index==2){
+      $config->outFile = $option;
+    }elseif($option=="--indent_size") {
+      $config->indent_size = $options[$index+1];
+    }elseif($index>0 && $options[$index-1]!="indent_size") {
+      $config->{substr($option, 2)} = true;
     }
-    elseif($index==2){
-      $outFile = $option;
-    }
-    elseif($option=="--indent_size") {
-      $_REQUEST["indent_size"] = $options[$index+1];
-    }
-    elseif($index>0 && $options[$index-1]!="indent_size") {
-      $_REQUEST[substr($option, 2)] = "on";
-    }
-
   }
-  $_REQUEST["download"] = 2;
-  $str = parseFile(true);
   
-  if(isset($outFile)) {
-      file_put_contents($outFile, $str);
+  $config->download = 2;
+  $str = parseFile(true, $config);
+  
+  if(isset($config->outFile)) {
+      file_put_contents($config->outFile, $str);
   } else {
     echo $str;
   }
@@ -166,8 +136,7 @@ function processBatch() {
 
 }
 
-function loadFile($filename)
-{
+function loadFile($filename){
   $code = "";
   if(filesize($filename)>0) {
     $f = fopen("$filename", "rb");
@@ -177,45 +146,10 @@ function loadFile($filename)
   return $code;
 }
 
-class phpStylist
-{
+class phpStylist {
   var $indent_size = 2;
   var $indent_char = " ";
   var $block_size  = 3;
-  var $options = array(
-    "SPACE_INSIDE_PARENTHESES"    => false,
-    "SPACE_OUTSIDE_PARENTHESES"   => false,
-    "SPACE_INSIDE_FOR"            => false,
-    "SPACE_AFTER_IF"              => false,
-    "SPACE_AFTER_COMMA"           => false,
-    "SPACE_AROUND_OBJ_OPERATOR"   => false,
-    "SPACE_AROUND_DOUBLE_COLON"   => false,
-    "SPACE_AROUND_DOUBLE_ARROW"   => false,
-    "SPACE_AROUND_ASSIGNMENT"     => false,
-    "SPACE_AROUND_COMPARISON"     => false,
-    "SPACE_AROUND_COLON_QUESTION" => false,
-    "SPACE_AROUND_LOGICAL"        => false,
-    "SPACE_AROUND_ARITHMETIC"     => false,
-    "SPACE_AROUND_CONCAT"         => false,
-    "LINE_BEFORE_FUNCTION"        => false,
-    "LINE_BEFORE_CURLY"           => false,
-    "LINE_BEFORE_CURLY_FUNCTION"  => false,
-    "LINE_AFTER_CURLY_FUNCTION"   => false,
-    "LINE_BEFORE_ARRAY"           => false,
-    "LINE_BEFORE_COMMENT"         => false,
-    "LINE_AFTER_COMMENT"          => false,
-    "LINE_BEFORE_COMMENT_MULTI"   => false,
-    "LINE_AFTER_COMMENT_MULTI"    => false,
-    "LINE_AFTER_BREAK"            => false,
-    "VERTICAL_CONCAT"             => false,
-    "VERTICAL_ARRAY"              => false,
-    "INDENT_CASE"                 => false,
-    "KEEP_REDUNDANT_LINES"        => false,
-    "ADD_MISSING_BRACES"          => false,
-    "ALIGN_ARRAY_ASSIGNMENT"      => false,
-    "ALIGN_VAR_ASSIGNMENT"        => false,
-    "ELSE_ALONG_CURLY"            => false,
-  );
   var $_new_line = "\n";
   var $_indent   = 0;
   var $_for_idx  = 0;
@@ -223,9 +157,9 @@ class phpStylist
   var $_log      = false;
   var $_pointer  = 0;
   var $_tokens   = 0;
+  var $options;
 
-  function phpStylist()
-  {
+  function phpStylist() {
     define("S_OPEN_CURLY", "{");
     define("S_CLOSE_CURLY", "}");
     define("S_OPEN_BRACKET", "[");
@@ -258,14 +192,14 @@ class phpStylist
     define("S_PROTECTED", "protected");
     if (defined("T_ML_COMMENT")) {
       define("T_DOC_COMMENT", T_ML_COMMENT);
-    }
-    elseif (defined("T_DOC_COMMENT")) {
+    } elseif (defined("T_DOC_COMMENT")) {
       define("T_ML_COMMENT", T_DOC_COMMENT);
     }
+    $this->options = new stdClass();
+    
   }
 
-  function formatCode($source = '')
-  {
+  function formatCode($source = ''){
     $in_for        = false;
     $in_break      = false;
     $in_function   = false;
@@ -304,9 +238,9 @@ class phpStylist
       }
       switch ($id) {
         case S_OPEN_CURLY:
-          $condition = $in_function ? $this->options["LINE_BEFORE_CURLY_FUNCTION"] : $this->options["LINE_BEFORE_CURLY"];
+          $condition = $in_function ? $this->options->line_before_curly_function : $this->options->line_before_curly;
           $this->_set_indent( + 1);
-          $this->_append_code((!$condition ? ' ' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf($this->options["LINE_AFTER_CURLY_FUNCTION"] && $in_function && !$this->_is_token_lf()) . $this->_get_crlf_indent());
+          $this->_append_code((!$condition ? ' ' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf($this->options->line_after_curly_function && $in_function && !$this->_is_token_lf()) . $this->_get_crlf_indent());
           $in_function = false;
           break;
 
@@ -317,13 +251,13 @@ class phpStylist
           }
           else {
             if (($in_break || $this->_is_token(S_CLOSE_CURLY)) && $switch_level > 0 && $switch_arr["l" . $switch_level] > 0 && $switch_arr["s" . $switch_level] == $this->_indent - 2) {
-              if ($this->options["INDENT_CASE"]) {
+              if ($this->options->indent_case) {
                 $this->_set_indent( - 1);
               }
               $switch_arr["l" . $switch_level]--;
               $switch_arr["c" . $switch_level]--;
             }
-            while ($switch_level > 0 && $switch_arr["l" . $switch_level] == 0 && $this->options["INDENT_CASE"]) {
+            while ($switch_level > 0 && $switch_arr["l" . $switch_level] == 0 && $this->options->indent_case) {
               unset($switch_arr["s" . $switch_level]);
               unset($switch_arr["c" . $switch_level]);
               unset($switch_arr["l" . $switch_level]);
@@ -344,7 +278,7 @@ class phpStylist
 
         case S_SEMI_COLON:
           if (($in_break || $this->_is_token(S_CLOSE_CURLY)) && $switch_level > 0 && $switch_arr["l" . $switch_level] > 0 && $switch_arr["s" . $switch_level] == $this->_indent - 2) {
-            if ($this->options["INDENT_CASE"]) {
+            if ($this->options->indent_case) {
               $this->_set_indent( - 1);
             }
             $switch_arr["l" . $switch_level]--;
@@ -354,9 +288,9 @@ class phpStylist
             $this->_set_indent( - 1);
             $in_concat = false;
           }
-          $this->_append_code($text . $this->_get_crlf($this->options["LINE_AFTER_BREAK"] && $in_break) . $this->_get_crlf_indent($in_for));
+          $this->_append_code($text . $this->_get_crlf($this->options->line_after_break && $in_break) . $this->_get_crlf_indent($in_for));
           while ($if_pending > 0) {
-            $text = $this->options["ADD_MISSING_BRACES"] ? "}" : "";
+            $text = $this->options->add_missing_braces ? "}" : "";
             $this->_set_indent( - 1);
             if ($text != "") {
               $this->_append_code($this->_get_crlf_indent() . $text . $this->_get_crlf_indent());
@@ -389,11 +323,11 @@ class phpStylist
             $arr_parenth["i" . $array_level]++;
             if ($this->_is_token(array(T_ARRAY), true) && !$this->_is_token(S_CLOSE_PARENTH)) {
               $this->_set_indent( + 1);
-              $this->_append_code((!$this->options["LINE_BEFORE_ARRAY"] ? '' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf_indent());
+              $this->_append_code((!$this->options->line_before_array ? '' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf_indent());
               break;
             }
           }
-          $this->_append_code($this->_get_space($this->options["SPACE_OUTSIDE_PARENTHESES"] || $space_after) . $text . $this->_get_space($this->options["SPACE_INSIDE_PARENTHESES"]));
+          $this->_append_code($this->_get_space($this->options->space_outside_parentheses || $space_after) . $text . $this->_get_space($this->options->space_inside_parentheses));
           $space_after = false;
           break;
 
@@ -401,7 +335,7 @@ class phpStylist
           if ($array_level > 0) {
             $arr_parenth["i" . $array_level]--;
             if ($arr_parenth["i" . $array_level] == 0) {
-              $comma = substr(trim($this->_code), - 1) != "," && $this->options['VERTICAL_ARRAY'] ? "," : "";
+              $comma = substr(trim($this->_code), - 1) != "," && $this->options->vertical_array ? "," : "";
               $this->_set_indent( - 1);
               $this->_append_code($comma . $this->_get_crlf_indent() . $text . $this->_get_crlf_indent());
               unset($arr_parenth["i" . $array_level]);
@@ -409,14 +343,14 @@ class phpStylist
               break;
             }
           }
-          $this->_append_code($this->_get_space($this->options["SPACE_INSIDE_PARENTHESES"]) . $text . $this->_get_space($this->options["SPACE_OUTSIDE_PARENTHESES"]));
+          $this->_append_code($this->_get_space($this->options->space_inside_parentheses) . $text . $this->_get_space($this->options->space_outside_parentheses));
           if ($if_level > 0) {
             $if_parenth["i" . $if_level]--;
             if ($if_parenth["i" . $if_level] == 0) {
               if (!$this->_is_token(S_OPEN_CURLY) && !$this->_is_token(S_SEMI_COLON)) {
-                $text = $this->options["ADD_MISSING_BRACES"] ? "{" : "";
+                $text = $this->options->add_missing_braces ? "{" : "";
                 $this->_set_indent( + 1);
-                $this->_append_code((!$this->options["LINE_BEFORE_CURLY"] || $text == "" ? ' ' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf_indent());
+                $this->_append_code((!$this->options->line_before_curly || $text == "" ? ' ' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf_indent());
                 $if_pending++;
               }
               unset($if_parenth["i" . $if_level]);
@@ -430,19 +364,19 @@ class phpStylist
             $this->_append_code($text . $this->_get_crlf_indent($in_for));
           }
           else {
-            $this->_append_code($text . $this->_get_space($this->options["SPACE_AFTER_COMMA"]));
+            $this->_append_code($text . $this->_get_space($this->options->space_after_comma));
             if ($this->_is_token(S_OPEN_PARENTH)) {
-              $space_after = $this->options["SPACE_AFTER_COMMA"];
+              $space_after = $this->options->space_after_comma;
             }
           }
           break;
 
         case S_CONCAT:
-          $condition = $this->options["SPACE_AROUND_CONCAT"];
+          $condition = $this->options->space_around_concat;
           if ($this->_is_token(S_OPEN_PARENTH)) {
             $space_after = $condition;
           }
-          if ($this->options["VERTICAL_CONCAT"]) {
+          if ($this->options->vertical_concat) {
             if (!$in_concat) {
               $in_concat = true;
               $this->_set_indent( + 1);
@@ -466,7 +400,7 @@ class phpStylist
         case T_SL_EQUAL:
         case T_SR_EQUAL:
         case S_EQUAL:
-          $condition = $this->options["SPACE_AROUND_ASSIGNMENT"];
+          $condition = $this->options->space_around_assignment;
           if ($this->_is_token(S_OPEN_PARENTH)) {
             $space_after = $condition;
           }
@@ -481,7 +415,7 @@ class phpStylist
         case T_IS_IDENTICAL:
         case T_IS_NOT_EQUAL:
         case T_IS_NOT_IDENTICAL:
-          $condition = $this->options["SPACE_AROUND_COMPARISON"];
+          $condition = $this->options->space_around_comparison;
           if ($this->_is_token(S_OPEN_PARENTH)) {
             $space_after = $condition;
           }
@@ -495,7 +429,7 @@ class phpStylist
         case T_LOGICAL_XOR:
         case T_SL:
         case T_SR:
-          $condition = $this->options["SPACE_AROUND_LOGICAL"];
+          $condition = $this->options->space_around_logical;
           if ($this->_is_token(S_OPEN_PARENTH)) {
             $space_after = $condition;
           }
@@ -503,27 +437,27 @@ class phpStylist
           break;
 
         case T_DOUBLE_COLON:
-          $condition = $this->options["SPACE_AROUND_DOUBLE_COLON"];
+          $condition = $this->options->space_around_double_colon;
           $this->_append_code($this->_get_space($condition) . $text . $this->_get_space($condition));
           break;
 
         case S_COLON:
           if ($switch_level > 0 && $switch_arr["l" . $switch_level] > 0 && $switch_arr["c" . $switch_level] < $switch_arr["l" . $switch_level]) {
             $switch_arr["c" . $switch_level]++;
-            if ($this->options["INDENT_CASE"]) {
+            if ($this->options->indent_case) {
               $this->_set_indent( + 1);
             }
             $this->_append_code($text . $this->_get_crlf_indent());
           }
           else {
-            $condition = $this->options["SPACE_AROUND_COLON_QUESTION"];
+            $condition = $this->options->space_around_colon_question;
             if ($this->_is_token(S_OPEN_PARENTH)) {
               $space_after = $condition;
             }
             $this->_append_code($this->_get_space($condition) . $text . $this->_get_space($condition));
           }
           if (($in_break || $this->_is_token(S_CLOSE_CURLY)) && $switch_level > 0 && $switch_arr["l" . $switch_level] > 0) {
-            if ($this->options["INDENT_CASE"]) {
+            if ($this->options->indent_case) {
               $this->_set_indent( - 1);
             }
             $switch_arr["l" . $switch_level]--;
@@ -532,7 +466,7 @@ class phpStylist
           break;
 
         case S_QUESTION:
-          $condition = $this->options["SPACE_AROUND_COLON_QUESTION"];
+          $condition = $this->options->space_around_colon_question;
           if ($this->_is_token(S_OPEN_PARENTH)) {
             $space_after = $condition;
           }
@@ -540,7 +474,7 @@ class phpStylist
           break;
 
         case T_DOUBLE_ARROW:
-          $condition = $this->options["SPACE_AROUND_DOUBLE_ARROW"];
+          $condition = $this->options->space_around_double_arrow;
           if ($this->_is_token(S_OPEN_PARENTH)) {
             $space_after = $condition;
           }
@@ -552,7 +486,7 @@ class phpStylist
         case S_TIMES:
         case S_DIVIDE:
         case S_MODULUS:
-          $condition = $this->options["SPACE_AROUND_ARITHMETIC"];
+          $condition = $this->options->space_around_arithmetic;
           if ($this->_is_token(S_OPEN_PARENTH)) {
             $space_after = $condition;
           }
@@ -560,7 +494,7 @@ class phpStylist
           break;
 
         case T_OBJECT_OPERATOR:
-          $condition = $this->options["SPACE_AROUND_OBJ_OPERATOR"];
+          $condition = $this->options->space_around_obj_operator;
           $this->_append_code($this->_get_space($condition) . $text . $this->_get_space($condition));
           break;
 
@@ -571,7 +505,7 @@ class phpStylist
         case T_DO:
         case T_IF:
         case T_SWITCH:
-          $space_after = $this->options["SPACE_AFTER_IF"];
+          $space_after = $this->options->space_after_if;
           $this->_append_code($text . $this->_get_space($space_after), false);
           if ($id == T_SWITCH) {
             $switch_level++;
@@ -592,7 +526,7 @@ class phpStylist
         case T_PROTECTED:
         case T_PRIVATE:
           if (!$in_function) {
-            if ($this->options["LINE_BEFORE_FUNCTION"]) {
+            if ($this->options->line_before_function) {
               $this->_append_code($this->_get_crlf($after || !$this->_is_token(array(T_COMMENT, T_ML_COMMENT, T_DOC_COMMENT), true)) . $this->_get_crlf_indent() . $text . $this->_get_space());
               $after = false;
             }
@@ -607,7 +541,7 @@ class phpStylist
           break;
 
         case T_START_HEREDOC:
-          $this->_append_code($this->_get_space($this->options["SPACE_AROUND_ASSIGNMENT"]) . $text);
+          $this->_append_code($this->_get_space($this->options->space_around_assignment) . $text);
           break;
 
         case T_END_HEREDOC:
@@ -626,12 +560,12 @@ class phpStylist
             }
             $text = preg_replace("/\r?\n$k/", $this->_get_crlf_indent(), $text);
           }
-          $after = $id == (T_COMMENT && preg_match("/^\/\//", $text)) ? $this->options["LINE_AFTER_COMMENT"] : $this->options["LINE_AFTER_COMMENT_MULTI"];
-          $before = $id == (T_COMMENT && preg_match("/^\/\//", $text)) ? $this->options["LINE_BEFORE_COMMENT"] : $this->options["LINE_BEFORE_COMMENT_MULTI"];
+          $after = $id == (T_COMMENT && preg_match("/^\/\//", $text)) ? $this->options->line_after_comment : $this->options->line_after_comment_multi;
+          $before = $id == (T_COMMENT && preg_match("/^\/\//", $text)) ? $this->options->line_before_comment : $this->options->line_before_comment_multi;
           if ($prev = $this->_is_token(S_OPEN_CURLY, true, $index, true)) {
             $before = $before && !$this->_is_token_lf(true, $prev);
           }
-          $after = $after && (!$this->_is_token_lf() || !$this->options["KEEP_REDUNDANT_LINES"]);
+          $after = $after && (!$this->_is_token_lf() || !$this->options->keep_redundant_lines);
           if ($before) {
             $this->_append_code($this->_get_crlf(!$this->_is_token(array(T_COMMENT), true)) . $this->_get_crlf_indent() . trim($text) . $this->_get_crlf($after) . $this->_get_crlf_indent());
           }
@@ -664,7 +598,7 @@ class phpStylist
 
         case T_WHITESPACE:
           $redundant = "";
-          if ($this->options["KEEP_REDUNDANT_LINES"]) {
+          if (isset($this->options->keep_redundant_lines)) {
             $lines          = preg_match_all("/\r?\n/", $text, $matches);
             $lines          = $lines > 0 ? $lines - 1 : 0;
             $redundant      = $lines > 0 ? str_repeat($this->_new_line, $lines) : "";
@@ -687,7 +621,7 @@ class phpStylist
           break;
 
         case T_ARRAY:
-          if ($this->options["VERTICAL_ARRAY"]) {
+          if ($this->options->vertical_array) {
             $next = $this->_is_token(array(T_DOUBLE_ARROW), true);
             $next |= $this->_is_token(S_EQUAL, true);
             $next |= $array_level>0;
@@ -721,7 +655,7 @@ class phpStylist
 
         case T_CASE:
         case T_DEFAULT:
-          if ($switch_arr["l" . $switch_level] > 0 && $this->options["INDENT_CASE"]) {
+          if ($switch_arr["l" . $switch_level] > 0 && $this->options->indent_case) {
             $switch_arr["c" . $switch_level]--;
             $this->_set_indent( - 1);
             $this->_append_code($this->_get_crlf_indent() . $text . $this->_get_space());
@@ -769,22 +703,22 @@ class phpStylist
           break;
 
         case T_ELSEIF:
-          $space_after  = $this->options["SPACE_AFTER_IF"];
-          $added_braces = $this->_is_token(S_SEMI_COLON, true) && $this->options["ADD_MISSING_BRACES"];
-          $condition    = $this->options['ELSE_ALONG_CURLY'] && ($this->_is_token(S_CLOSE_CURLY, true) || $added_braces);
+          $space_after  = $this->options->space_after_if;
+          $added_braces = $this->_is_token(S_SEMI_COLON, true) && $this->options->add_missing_braces;
+          $condition    = $this->options->else_along_curly && ($this->_is_token(S_CLOSE_CURLY, true) || $added_braces);
           $this->_append_code($this->_get_space($condition) . $text . $this->_get_space($space_after), $condition);
           $if_level++;
           $if_parenth["i" . $if_level] = 0;
           break;
 
         case T_ELSE:
-          $added_braces = $this->_is_token(S_SEMI_COLON, true) && $this->options["ADD_MISSING_BRACES"];
-          $condition = $this->options['ELSE_ALONG_CURLY'] && ($this->_is_token(S_CLOSE_CURLY, true) || $added_braces);
+          $added_braces = $this->_is_token(S_SEMI_COLON, true) && $this->options->add_missing_braces;
+          $condition = $this->options->else_along_curly && ($this->_is_token(S_CLOSE_CURLY, true) || $added_braces);
           $this->_append_code($this->_get_space($condition) . $text, $condition);
           if (!$this->_is_token(S_OPEN_CURLY) && !$this->_is_token(array(T_IF))) {
-            $text = $this->options["ADD_MISSING_BRACES"] ? "{" : "";
+            $text = $this->options->add_missing_braces ? "{" : "";
             $this->_set_indent( + 1);
-            $this->_append_code((!$this->options["LINE_BEFORE_CURLY"] || $text == "" ? ' ' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf_indent());
+            $this->_append_code((!$this->options->line_before_curly || $text == "" ? ' ' : $this->_get_crlf_indent(false, - 1)) . $text . $this->_get_crlf_indent());
             $if_pending++;
           }
           break;
@@ -797,8 +731,7 @@ class phpStylist
     return $this->_align_operators();
   }
 
-  function _get_token($token)
-  {
+  function _get_token($token){
     if (is_string($token)) {
       return array($token, $token);
     }
@@ -807,8 +740,7 @@ class phpStylist
     }
   }
 
-  function _append_code($code = "", $trim = true)
-  {
+  function _append_code($code = "", $trim = true){
     if ($trim) {
       $this->_code = rtrim($this->_code) . $code;
     }
@@ -817,8 +749,7 @@ class phpStylist
     }
   }
 
-  function _get_crlf_indent($in_for = false, $increment = 0)
-  {
+  function _get_crlf_indent($in_for = false, $increment = 0){
     if ($in_for) {
       $this->_for_idx++;
       if ($this->_for_idx > 2) {
@@ -829,35 +760,30 @@ class phpStylist
       return $this->_get_crlf() . $this->_get_indent($increment);
     }
     else {
-      return $this->_get_space($this->options["SPACE_INSIDE_FOR"]);
+      return $this->_get_space($this->options->space_inside_for);
     }
   }
 
-  function _get_crlf($true = true)
-  {
+  function _get_crlf($true = true){
     return $true ? $this->_new_line : "";
   }
 
-  function _get_space($true = true)
-  {
+  function _get_space($true = true){
     return $true ? " " : "";
   }
 
-  function _get_indent($increment = 0)
-  {
+  function _get_indent($increment = 0){
     return str_repeat($this->indent_char, ($this->_indent + $increment) * $this->indent_size);
   }
 
-  function _set_indent($increment)
-  {
+  function _set_indent($increment){
     $this->_indent += $increment;
     if ($this->_indent < 0) {
       $this->_indent = 0;
     }
   }
 
-  function _is_token($token, $prev = false, $i = 99999, $idx = false)
-  {
+  function _is_token($token, $prev = false, $i = 99999, $idx = false){
     if ($i == 99999) {
       $i = $this->_pointer;
     }
@@ -881,8 +807,7 @@ class phpStylist
     return false;
   }
 
-  function _is_token_lf($prev = false, $i = 99999)
-  {
+  function _is_token_lf($prev = false, $i = 99999) {
     if ($i == 99999) {
       $i = $this->_pointer;
     }
@@ -900,8 +825,7 @@ class phpStylist
     return false;
   }
 
-  function _pad_operators($found)
-  {
+  function _pad_operators($found){
     global $quotes;
     $pad_size = 0;
     $result   = "";
@@ -928,15 +852,14 @@ class phpStylist
     return $result;
   }
 
-  function _parse_block($blocks)
-  {
+  function _parse_block($blocks){
     global $quotes;
     $pad_chars = "";
     $holders = array();
-    if ($this->options['ALIGN_ARRAY_ASSIGNMENT']) {
+    if ($this->options->align_array_assignment) {
       $pad_chars .= ",";
     }
-    if ($this->options['ALIGN_VAR_ASSIGNMENT']) {
+    if ($this->options->align_var_assignment) {
       $pad_chars .= ";";
     }
     $php_code = $blocks[0];
@@ -960,12 +883,10 @@ class phpStylist
     return $php_code;
   }
 
-  function _align_operators()
-  {
-    if ($this->options['ALIGN_ARRAY_ASSIGNMENT'] || $this->options['ALIGN_VAR_ASSIGNMENT']) {
+  function _align_operators(){
+    if ($this->options->align_array_assignment || $this->options->align_var_assignment) {
       return preg_replace_callback("/<\?.*?\?" . ">/s", array($this, "_parse_block"), $this->_code);
-    }
-    else {
+    } else {
       return $this->_code;
     }
   }
