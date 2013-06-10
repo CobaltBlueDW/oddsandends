@@ -12,7 +12,8 @@
             "ReformatCodeReviewer":{
                 "className":"ReformatCodeReviewer",
                 "classFile":"file://./libs/phpStylist/ReformatCodeReviewer.php",
-                "modFiles": false
+                "modFiles": false,
+                "config":"file://./libs/phpStylist/config.json"
             },
             "LintModeCodeReviewer":{
                 "className":"LintModeCodeReviewer",

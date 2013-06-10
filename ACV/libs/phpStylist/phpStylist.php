@@ -60,7 +60,7 @@ function processBatch () {
     }
     
     //get default config settings
-    $config = json_decode (file_get_contents ('config.json'));
+    $config = json_decode (file_get_contents (__DIR__.'/working_temp.json'));
 
     /*foreach($config as $key=>$value){
         $_REQUEST[$key] = $value;

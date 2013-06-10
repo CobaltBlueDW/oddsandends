@@ -57,6 +57,8 @@ class ReformatCodeReviewer extends CodeReviewer{
         if (!isset($options)) $options = $this->defaultOptions;
         if (!is_dir($config->workDir)) throw new Exception("Working directory ({$config->workDir}) was not found.");
         
+        if (isset($options->config)) file_put_contents($config->libDir.'/phpStylist/working_temp.json', json_encode($options->config));
+        
         exec('php "'.$config->libDir.'/phpStylist/phpStylist.php" "'.$filePath.'" "'.$config->workDir.'/phpstylist_temp.php"');
         
         if (!is_file($config->workDir.'/phpstylist_temp.php')) throw new Exception("Failed to find generated file.  File possibly failed to generate.");
