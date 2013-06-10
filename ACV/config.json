@@ -42,7 +42,7 @@
         "RegExCodeReview": false,
         "CodeSnifferCodeReviewer": false,
         "ReformatCodeReviewer": true,
-        "LintModeCodeReviewer": false,
+        "LintModeCodeReviewer": true,
         "PHPDocCodeReviewer": false,
         "PHPMDCodeReviewer": false
     },

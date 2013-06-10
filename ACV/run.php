@@ -161,6 +161,9 @@ if (isset($config->allowedReviews)){
 }
 
 //prep resources
+if (!is_dir($config->workDir)) {
+    mkdir($config->workDir, 0777);
+}
 $codeReviewers = new stdClass();
 foreach($config->codeReviewers as $revName=>$reviewer){
     if (!isset($reviewer->className)) throw new Exception("Required property of {$revName} item, className is missing.");
