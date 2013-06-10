@@ -22,15 +22,15 @@
     "add_missing_braces": true,
     "line_after_break": true,
     "space_inside_for": true,
-    "indent_case": false,
+    "indent_case": true,
     "line_before_array": false,
     "vertical_array": true,
     "align_array_assignment": true,
     "space_around_double_arrow": true,
-    "vertical_concat": true,
+    "vertical_concat": false,
     "space_around_concat": false,
     "line_before_comment_multi": true,
     "line_after_comment_multi": false,
-    "line_before_comment": true,
+    "line_before_comment": false,
     "line_after_comment": false
 }

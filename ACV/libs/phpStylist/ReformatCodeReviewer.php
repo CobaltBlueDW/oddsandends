@@ -72,7 +72,7 @@ class ReformatCodeReviewer extends CodeReviewer{
         
         if (count($result) == 1){   //no errors found
             //if old and new file are different, replace old file and make an issue noting the change
-            if (md5_file($config->workDir.'/phpstylist_temp.php') != md5_file($filePath)) {
+            if (isset($options->modFiles) && $options->modFiles && md5_file($config->workDir.'/phpstylist_temp.php') != md5_file($filePath)) {
                 $issues []= new CodeIssue(
                     'ReformatCodeReviewer',
                     $filePath,
