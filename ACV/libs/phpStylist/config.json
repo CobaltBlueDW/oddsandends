@@ -32,5 +32,6 @@
     "line_before_comment_multi": true,
     "line_after_comment_multi": false,
     "line_before_comment": false,
-    "line_after_comment": false
+    "line_after_comment": false,
+    "allow_inline_comments": true
 }

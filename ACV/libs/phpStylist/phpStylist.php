@@ -294,6 +294,12 @@ class phpStylist {
                         $this->_set_indent ( - 1);
                         $in_concat = false;
                     }
+                    if ($this->options->allow_inline_comments && 
+                            $this->_is_token(array(T_COMMENT, T_ML_COMMENT, T_DOC_COMMENT), false, $index, true) &&
+                            !$this->_is_token_lf(false, $index)) {
+                        $this->_append_code ($text.$this->_get_indent());
+                        break;
+                    }
                     $this->_append_code ($text.$this->_get_crlf ($this->options->line_after_break && $in_break).$this->_get_crlf_indent ($in_for));
                     while ($if_pending > 0) {
                         $text = $this->options->add_missing_braces ? "}" : "";
