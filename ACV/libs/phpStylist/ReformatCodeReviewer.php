@@ -68,7 +68,7 @@ class ReformatCodeReviewer extends CodeReviewer{
         $fileName = substr($fileName, 0, strrpos($fileName, '.'));
         $newFilePath = self::archiveFile($config->workDir.'/phpstylist_temp.php', $fileName);
         
-        @exec('php -l "'.$newFilePath, $result);
+        @exec('php -l "'.$newFilePath.'"', $result);
         
         $issues = array();
         
