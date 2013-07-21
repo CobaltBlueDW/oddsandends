@@ -1,5 +1,30 @@
 <?php
 /**
+ * This file describes a CodeReviewer that runs PHP Lint Mode to validate PHP syntax 
+ *
+ * @copyright Copyright 2012 Web Courseworks, Ltd.
+ * @license   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0
+ *
+ * This file is intended to be included with the ACR
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * http://www.gnu.org/licenses/gpl-2.0.txt
+ */
+
+/**
  * runs "php -l <filename>" on each file to check for compile-time errors
  *
  * @author dwipperfurth
@@ -7,6 +32,11 @@
 
 class LintModeCodeReviewer extends CodeReviewer{
     
+    /**
+     *  creates a LintModeCodeReview object
+     * 
+     * @param object $defaultOptions a value object with default options
+     */
     function __construct($defaultOptions) {
         $this->reviewer = 'LintModeCodeReviewer';
         parent::__construct($defaultOptions);
@@ -49,5 +79,3 @@ class LintModeCodeReviewer extends CodeReviewer{
     }
     
 }
-
-?>

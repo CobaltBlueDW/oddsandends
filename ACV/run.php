@@ -1,6 +1,6 @@
 <?php
 /**
- * This file simply clears the redis cache, so that it can be cleared by a url hit.
+ * This file is used to manage the execution of different code reviewers
  *
  * @copyright Copyright 2012 Web Courseworks, Ltd.
  * @license   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0

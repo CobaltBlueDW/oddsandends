@@ -1,4 +1,12 @@
 {
+    "DOCUMENTATION":{
+        "libDir": "the location of the ACR libraries. probably doesn't need changing.",
+        "workDir": "the location where ACR can produce working temp files.  ACR will freely over-write any files in this directory.",
+        "reviewTargets": "the default lit of files/directories to apply code review to.  Usually this is a reference to a seperate json file o that it may be managed seperately.",
+        "codeReviewer": "this defines acceptable code reviewers, and the options for them.  Each name/value pair represents a different reviewer.  Each value should at the very least be an object with className and classFile value describing the CodeReview class responsible for managng that reviewer.  It may also contain other information to be pased to the CodeReviewer",
+        "allowedRules": "decribes which rules in the codeReviewer set will be used when a eview is run.  This seperation/destinction exists to make using the same config file for multiple tasks easier.",
+        "output": "If you want the output to come in the form of a file (instead of STDOUT), list a reportFile, and if you want the output to be in a form other than JSON, list a reportFormat"
+    },
     "libDir":"./libs",
     "workDir":"./work",
     "reviewTargets":"file://reviewTargets.json",
@@ -39,15 +47,15 @@
             }
     },
     "allowedReviews":{
-        "RegExCodeReview": false,
-        "CodeSnifferCodeReviewer": false,
-        "ReformatCodeReviewer": true,
+        "RegExCodeReview": true,
+        "CodeSnifferCodeReviewer": true,
+        "ReformatCodeReviewer": false,
         "LintModeCodeReviewer": true,
-        "PHPDocCodeReviewer": false,
-        "PHPMDCodeReviewer": false
+        "PHPDocCodeReviewer": true,
+        "PHPMDCodeReviewer": true
     },
     "output":{
-        "reportFile":"./work/acr_report.json",
-        "reportFormat":"json"
+        "reportFile":"./work/codereview1.txt",
+        "reportFormat":"text"
     }
 }

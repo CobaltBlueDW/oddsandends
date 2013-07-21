@@ -1,7 +1,34 @@
 <?php
+/**
+ * This file is used to aid in generating XML for the XMLReporter
+ *
+ * @copyright Copyright 2012 Web Courseworks, Ltd.
+ * @license   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0
+ *
+ * This file is intended to be included with the ACR
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation; either version 2 of the License, or
+ * (at your option) any later version.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License along
+ * with this program; if not, write to the Free Software Foundation, Inc.,
+ * 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ *
+ * http://www.gnu.org/licenses/gpl-2.0.txt
+ */
 
 // functions adopted from http://www.sean-barton.co.uk/2009/03/turning-an-array-or-object-into-xml-using-php/
 
+/**
+ *  helper function for serializing XML 
+ */
 class XMLSerializer {
 
     public static function generateXML($obj, $node_block='nodes', $node_name='node'){
