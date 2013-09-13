@@ -65,7 +65,7 @@ class CSVReporter extends Reporter {
      * 
      * @param CodeIssue $issues an issue to output
      */
-    function push(CodeIssue $issues){
+    function push(array $issues){
         if (isset($this->fileHandle)) {
             $this->pushToFile($issues);
         } else {
@@ -87,7 +87,7 @@ class CSVReporter extends Reporter {
      * 
      * @param CodeIssue $issues an issue to write to file
      */
-    protected function pushToFile(CodeIssue $issues){
+    protected function pushToFile(array $issues){
         if ($this->writeHeader) {
             fwrite($this->fileHandle, $this->genHeader($issues));
             $this->writeHeader = false;

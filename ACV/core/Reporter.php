@@ -49,9 +49,9 @@ abstract class Reporter {
     /**
      *  pushes an issue to output
      * 
-     * @param CodeIssue $issues an issue to output
+     * @param array(CodeIssue) $issues an issue to output
      */
-    abstract function push(CodeIssue $issues);
+    abstract function push(array $issues);
     
     /**
      *  The last step in generating a report: closing the output stream. 

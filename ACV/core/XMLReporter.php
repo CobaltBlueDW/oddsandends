@@ -57,7 +57,7 @@ class XMLReporter extends Reporter {
      * 
      * @param CodeIssue $issues an issue to output
      */
-    function push(CodeIssue $issues){
+    function push(array $issues){
         if (isset($this->fileHandle)) {
             $this->pushToFile($issues);
         } else {
@@ -83,7 +83,7 @@ class XMLReporter extends Reporter {
      * 
      * @param CodeIssue $issues an issue to write to file
      */
-    private function pushToFile(CodeIssue $issues){
+    private function pushToFile(array $issues){
         foreach($issues as $issue){
             if ($this->isFirst) {
                 fwrite($this->fileHandle, "<issue>".XMLSerializer::generateXML($issue)."</issue>");

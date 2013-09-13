@@ -52,7 +52,7 @@ class TextReporter extends Reporter {
      * 
      * @param CodeIssue $issues an issue to output
      */
-    function push(CodeIssue $issues){
+    function push(array $issues){
         if (isset($this->fileHandle)) {
             $this->pushToFile($issues);
         } else {
@@ -73,7 +73,7 @@ class TextReporter extends Reporter {
      * 
      * @param CodeIssue $issues an issue to write to file
      */
-    private function pushToFile(CodeIssue $issues){
+    private function pushToFile(array $issues){
         foreach($issues as $issue){
             fwrite($this->fileHandle, $issue."\n");
         }

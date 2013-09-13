@@ -17,6 +17,8 @@ class WCW_Sniffs_Strings_LangStringSniff implements PHP_CodeSniffer_Sniff {
     }
     
     public function process(PHP_CodeSniffer_File $file, $stackptr) {
+        if (preg_match( "/[\\/\\\\]lang[\\/\\\\]/" , $file->getFilename())) return; 
+        
         $tokens = $file->getTokens();
         
         for ($i = $stackptr; $i < $file->numTokens; $i++) {
