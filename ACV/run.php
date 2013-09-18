@@ -79,36 +79,11 @@ function objJoin($obj1, $obj2){
     return $obj1;
 }
 
-/**
- *  Flattens a directory structure into a list of file paths
- * 
- * 
- * @param type $dirRef  a path to a directory
- * @param string $curPath   current path used to support recursion
- * @return array    list of file paths in directory 
- */
-function compileFileList($dirRef, $curPath='./'){
-    $curPath = $curPath.$dirRef."/";
-    $fileList = array_diff(scandir($curPath), array('..', '.'));
-    
-    $newArray = array();
-    
-    foreach($fileList as $value){
-        if (is_dir($curPath.$value)){
-            $newArray = array_merge($newArray, compileFileList($value, $curPath));
-        }else{
-            $newArray []= $curPath.$value;
-        }
-    }
-    
-    return $newArray;
-}
-
-
 //include base libs
 require_once('core/CodeIssue.php');
 require_once('core/CodeRule.php');
 require_once('core/CodeReviewer.php');
+require_once('core/TargetGenerator.php');
 
 //handle console command args
 $assocArgs = getopt("c:t:e:r:");
@@ -153,10 +128,17 @@ if (is_string($config->reviewTargets)){
     $config->reviewTargets = $tempObj;
 }
 
-if (!isset($config->codeReviewers)) throw new Exception("Required property CodeReviewers is missing.");
+if (!isset($config->codeReviewers)) throw new Exception("Required property codeReviewers is missing.");
 if (isset($config->allowedReviews)){
     foreach($config->allowedReviews as $allowKey=>$allowValue){
         if ($allowValue !== true) unset($config->codeReviewers->$allowKey);
+    }
+}
+
+if (!isset($config->targetGenerators)) throw new Exception("Required property targetGenerators is missing.");
+if (isset($config->allowedGenerators)){
+    foreach($config->allowedGenerators as $allowKey=>$allowValue){
+        if ($allowValue !== true) unset($config->targetGenerators->$allowKey);
     }
 }
 
@@ -170,32 +152,11 @@ foreach($config->codeReviewers as $revName=>$reviewer){
     $codeReviewers->$revName = new $reviewer->className($reviewer);
 }
 
-$targetList = array();
-foreach ($config->reviewTargets as $target) {
-    if(is_dir($target)){
-        $targetList = array_merge($targetList, compileFileList($target));
-    } else {
-        switch( strtolower(substr($target, strrpos($target, '.'))) ){
-            case '.php':
-                $targetList []= $target;
-                break;
-            default:
-                break;
-        }
-    }
+$targetGenerators = new stdClass();
+foreach($config->targetGenerators as $genName=>$generator){
+    if (!isset($generator->className)) throw new Exception("Required property of {$genName} item, className is missing.");
+    $targetGenerators->$genName = new $generator->className($generator);
 }
-
-for($i=0; $i < count($targetList); $i++){
-    switch( strtolower(substr($targetList[$i], strrpos($targetList[$i], '.'))) ){
-        case '.php':
-            break;
-        default:
-            array_splice($targetList, $i, 1);
-            $i--;
-            break;
-    }
-}
-file_put_contents($config->workDir."/target_list.json", json_encode($targetList));
 
 //run preReview
 foreach($codeReviewers as $reviewer){
@@ -231,10 +192,14 @@ if (isset($config->output->reportFile)) {
     $reporter->open();
 }
 
+//setup target generators
+
 //run automation
-foreach($targetList as $target){
-    foreach($codeReviewers as $reviewer){
-        $reporter->push( $reviewer->reviewFile($target) );
+foreach($targetGenerators as $generator){
+    while($target = $generator->next()){
+        foreach($codeReviewers as $reviewer){
+            $reporter->push( $reviewer->reviewFile($target) );
+        }
     }
 }
 

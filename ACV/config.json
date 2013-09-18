@@ -9,7 +9,27 @@
     },
     "libDir":"./libs",
     "workDir":"./work",
+    
     "reviewTargets":"file://reviewTargets.json",
+    
+    "targetGenerators":{
+        "JSONGenerator":{
+            "className":"JSONGenerator",
+            "classFile":"file://./libs/JSONGenerator/JSONGenerator.php",
+            "targets":"file://reviewTargets.json"
+        },
+        "LocalGitGenerator":{
+            "className":"LocalGitGenerator",
+            "classFile":"file://./libs/LocalGitGenerator/LocalGitGenerator.php",
+            "path":".",
+            "diffWith":"HEAD~2"
+        }
+    },
+    "allowedGenerators":{
+        "JSONGenerator": true,
+        "LocalGitGenerator": false
+    },
+    
     "codeReviewers":{
             "RegExCodeReview":"file://./libs/RCR/config.json",
             "CodeSnifferCodeReviewer":{
@@ -54,6 +74,7 @@
         "PHPDocCodeReviewer": true,
         "PHPMDCodeReviewer": true
     },
+    
     "output":{
         "reportFile":"./work/codereview1.txt",
         "reportFormat":"text"
