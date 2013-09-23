@@ -35,16 +35,49 @@ class LocalGitGenerator extends TargetGenerator{
     protected $fileListIndex;
     
     public function next(stdClass $options=null){
+        $this->fileListIndex++;
+        
+        if (isset($this->fileList[$this->fileListIndex])) {
+            return $this->fileList[$this->fileListIndex];
+        } else {
+            return false;
+        }
     }
     
     public function reset(){
+        $this->fileListIndex = -1;
     }
     public function close(){
+        $this->fileListIndex = 0;
+        unset($this->fileList);
+    }
+    
+    public function validateGit(){
+        exec("git --version" ,$result);
+        if (empty($result) || substr($result[0], 4, 7) != 'version') {
+            throw new Exception('"git --version" command attempted with an unexpected response.  git may not be properly installed/configured.');
+        }
+    }
+    
+    public function getDiffFiles(){
+        global $config;
+        
+        if (!is_dir($config->workDir)) throw new Exception("Working directory ({$config->workDir}) was not found.");
+        
+        $repoPath = rtrim($this->defaultOptions->repoDir, '/');
+        exec('git --git-dir="'.$repoPath.'/.git" diff --name-only "'.$this->defaultOptions->fromCommit.'" "'.$this->defaultOptions->toCommit.'"', $results);
+        
+        foreach($results as $key => $value){
+            $results[$key] = $repoPath.'/'.$value;
+        }
+        
+        $this->fileList = $results;
     }
     
     protected function setup($defaultOptions){
+        $this->defaultOptions = $defaultOptions;
+        $this->validateGit();
+        $this->getDiffFiles();
+        $this->reset();
     }
-    
-    
-    
 }

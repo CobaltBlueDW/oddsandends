@@ -21,13 +21,14 @@
         "LocalGitGenerator":{
             "className":"LocalGitGenerator",
             "classFile":"file://./libs/LocalGitGenerator/LocalGitGenerator.php",
-            "path":".",
-            "diffWith":"HEAD~2"
+            "repoDir":"../../broadway",
+            "fromCommit":"HEAD",
+            "toCommit":"origin/master"
         }
     },
     "allowedGenerators":{
-        "JSONGenerator": true,
-        "LocalGitGenerator": false
+        "JSONGenerator": false,
+        "LocalGitGenerator": true
     },
     
     "codeReviewers":{
