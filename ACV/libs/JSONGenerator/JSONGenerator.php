@@ -43,12 +43,13 @@ class JSONGenerator extends TargetGenerator{
         $fileList = array_diff(scandir($curPath), array('..', '.'));
 
         $newArray = array();
-
+        $opt = new stdClass();
         foreach($fileList as $value){
             if (is_dir($curPath.$value)){
                 $newArray = array_merge($newArray, self::compileFileList($value, $curPath));
             }else{
-                $newArray []= $curPath.$value;
+                $opt->path = $curPath.$value;
+                $newArray []= new FileTarget($opt);
             }
         }
 
@@ -87,30 +88,16 @@ class JSONGenerator extends TargetGenerator{
         $this->defaultOptions = $defaultOptions;
         
         $this->fileList = array();
+        $opt = new stdClass();
         foreach ($this->defaultOptions->targets as $target) {
             if(is_dir($target)){
                 $this->fileList = array_merge($this->fileList, self::compileFileList($target));
             } else {
-                switch( strtolower(substr($target, strrpos($target, '.'))) ){
-                    case '.php':
-                        $this->fileList []= $target;
-                        break;
-                    default:
-                        break;
-                }
+                $opt->path = $target;
+                $this->fileList []= new FileTarget($opt);
             }
         }
-
-        for($i=0; $i < count($this->fileList); $i++){
-            switch( strtolower(substr($this->fileList[$i], strrpos($this->fileList[$i], '.'))) ){
-                case '.php':
-                    break;
-                default:
-                    array_splice($this->fileList, $i, 1);
-                    $i--;
-                    break;
-            }
-        }
+        
         if(isset($this->defaultOptions->targetListOutputFile)) {
             file_put_contents($config->workDir."/".$this->defaultOptions->targetListOutputFile, json_encode($this->fileList));
         }

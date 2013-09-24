@@ -34,8 +34,9 @@ require_once('CodeIssue.php');
 abstract class CodeReviewer {
     
     protected $reviewer = 'CodeReviewer';   //the name of the CodeReviewer for ue in CodeIssues
-    protected $defaultOptions;      //properties object to use for default settings
-    protected $codeRules;   //list of CodeRule classes
+    protected $defaultOptions;              //properties object to use for default settings
+    protected $codeRules;                   //list of CodeRule classes
+    protected $supportTypes = null;         //an associative array of (<type>,<support>) pairs
     
     /**
      *  creates a code reviewer
@@ -77,5 +78,26 @@ abstract class CodeReviewer {
      * @return array[CodeIssue] an array of issues found
      */
     abstract function reviewFile($filePath, $options=null);
+    
+    /**
+     * Reviews a file potentially modifying it, and returning issues
+     * 
+     * @param type $fileResource
+     * @param type $options 
+     * @return array[CodeIssue] an array of issues found
+     */
+    function reviewTarget(Target $target, $options=null){
+        if (!$this->isSupported($target->getType())) return false;
+        return $this->reviewFile($target->getPath(), $options);
+    }
+    
+    function isSupported($type){
+        if (!isset($type)) return false;
+        if (empty($this->supportedTypes)) return true;  //if not set assume all types are supported
+        
+        $type = trim(strtolower($type));
+        if (!isset($this->supportedTypes[$type])) return false;
+        return $this->supportedTypes[$type];
+    }
     
 }

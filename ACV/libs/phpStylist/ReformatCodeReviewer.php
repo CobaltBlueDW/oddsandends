@@ -31,6 +31,8 @@
  */
 class ReformatCodeReviewer extends CodeReviewer{
     
+    protected $supportedTypes = array('php'=>true, 'html'=>true, 'css'=>true);
+    
     /**
      *  copies a file into the archive directory
      * 

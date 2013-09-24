@@ -83,6 +83,8 @@ function objJoin($obj1, $obj2){
 require_once('core/CodeIssue.php');
 require_once('core/CodeRule.php');
 require_once('core/CodeReviewer.php');
+require_once('core/Target.php');
+require_once('core/FileTarget.php');
 require_once('core/TargetGenerator.php');
 
 //handle console command args
@@ -198,7 +200,8 @@ if (isset($config->output->reportFile)) {
 foreach($targetGenerators as $generator){
     while($target = $generator->next()){
         foreach($codeReviewers as $reviewer){
-            $reporter->push( $reviewer->reviewFile($target) );
+            $result = $reviewer->reviewTarget($target);
+            if (is_array($result)) $reporter->push($result);
         }
     }
 }

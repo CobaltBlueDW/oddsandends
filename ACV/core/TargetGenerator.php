@@ -47,7 +47,7 @@ abstract class TargetGenerator {
      * on the setup parameters.
      * 
      * @param   stdClass    $options    any additional relavant parameters that might affect this next call
-     * @return String|false   the next target (as a file path), or false if no more targets to return
+     * @return Target|false   the next target, or false if no more targets to return
      */
     abstract public function next(stdClass $options=null);
     public function reset(){}

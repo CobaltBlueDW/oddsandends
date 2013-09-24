@@ -22,8 +22,8 @@
             "className":"LocalGitGenerator",
             "classFile":"file://./libs/LocalGitGenerator/LocalGitGenerator.php",
             "repoDir":"../../broadway",
-            "fromCommit":"HEAD",
-            "toCommit":"origin/master"
+            "fromCommit":"origin/master",
+            "toCommit":"HEAD"
         }
     },
     "allowedGenerators":{

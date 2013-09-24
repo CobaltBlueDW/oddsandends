@@ -10,6 +10,8 @@ class CodeSnifferCodeReviewer extends CodeReviewer{
     protected $csvKeyMap;
     protected $errorTypeMap;
     
+    protected $supportedTypes = array('php'=>true, 'html'=>true);
+    
     function __construct($defaultOptions) {
         $this->reviewer = 'CodeSnifferCodeReviewer';
         parent::__construct($defaultOptions);

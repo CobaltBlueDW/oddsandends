@@ -32,6 +32,8 @@
 
 class LintModeCodeReviewer extends CodeReviewer{
     
+    protected $supportedTypes = array('php'=>true, 'html'=>true);
+    
     /**
      *  creates a LintModeCodeReview object
      * 

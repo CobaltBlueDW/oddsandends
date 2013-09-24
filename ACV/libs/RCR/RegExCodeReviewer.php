@@ -31,6 +31,8 @@
  */
 class RegExCodeReviewer extends CodeReviewer{
     
+    protected $supportedTypes = array('php'=>true, 'html'=>true);
+    
     /**
      *  find where in the array of numbers a new number should be inserted. Used
      *  for calculating line numbers for issues.
