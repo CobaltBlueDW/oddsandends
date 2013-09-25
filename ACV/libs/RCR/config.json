@@ -18,6 +18,7 @@
                 "$CFG":true,
                 "$ADMIN":true,
                 "$SESSION":true,
+                "$OUTPUT":true,
                 "$USER":true,
                 "$DB":true,
                 "$SITE":true,
