@@ -15,10 +15,15 @@
                 "$_SESSION":true,
                 "$_POST":true,
                 "$_GET":true,
+                "$_REQUEST": true,
+                "$_SERVER": true,
+                "$_COOKIE": true,
                 "$CFG":true,
                 "$ADMIN":true,
                 "$SESSION":true,
                 "$OUTPUT":true,
+                "$SCRIPT": true,
+                "$FULLSCRIPT": true,
                 "$USER":true,
                 "$DB":true,
                 "$SITE":true,
@@ -26,6 +31,7 @@
                 "$COURSE":true,
                 "$PAGE":true,
                 "$ME":true,
+                "$FULLME": true,
                 "$INSTALL":true
             }
         }
