@@ -1,0 +1,7 @@
+{
+    "className":"FileNameReviewer",
+    "classFile":"file://./FileNameReviewer.php",
+    "codeRules":{
+	"RegExFileNameCodeRule":"file://./RegExFileNameConfig.json"
+    }
+}

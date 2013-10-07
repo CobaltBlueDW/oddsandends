@@ -1,0 +1,16 @@
+{
+    "className":"RegExFileNameCodeRule",
+    "classFile":"file://./RegExFileNameCodeRule.php",
+    "rules":{
+        "UpperCase":{
+            "regEx":"/.*[A-Z].*/",
+            "description":"Use of upper-case letters",
+            "level":1
+        },
+        "GitFiles":{
+            "regEx":"/.*\\.git.*/",
+            "description":"Writting of git files",
+            "level":3
+        },
+    }
+}
