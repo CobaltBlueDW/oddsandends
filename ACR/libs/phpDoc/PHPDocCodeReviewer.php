@@ -7,7 +7,7 @@
 
 class PHPDocCodeReviewer extends CodeReviewer{
     
-    protected $supportedTypes = array('php'=>true, 'html'=>true);
+    protected $supportedTypes = array('php'=>true);
     
     function __construct($defaultOptions) {
         $this->reviewer = 'PHPDocCodeReviewer';
