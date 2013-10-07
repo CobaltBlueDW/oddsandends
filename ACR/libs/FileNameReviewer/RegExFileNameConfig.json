@@ -11,6 +11,6 @@
             "regEx":"/.*\\.git.*/",
             "description":"Writting of git files",
             "level":3
-        },
+        }
     }
 }
