@@ -4,6 +4,7 @@
     "rules":{
         "UpperCase":{
             "regEx":"/.*[A-Z].*/",
+            "except": ["/.*README.*/"],
             "description":"Use of upper-case letters",
             "level":1
         },

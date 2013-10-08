@@ -58,19 +58,27 @@ class RegExFileNameCodeRule extends CodeRule{
             $matchCount = preg_match_all($rule->regEx, $fileString, $ruleMatches, PREG_OFFSET_CAPTURE);
             if ($matchCount) {
                 foreach($ruleMatches[0] as $match){
-
-                    $issues []= new CodeIssue(
-                            'RegExFileNameCodeRule',
-                            $options->filePath,
-                            $rule->level,
-                            $rule->ruleID,
-                            false,
-                            $rule->description,
-                            0,
-                            0,
-                            $match[0],
-                            null
-                    );
+                    $foundException = false;
+                    foreach($rule->except as $exception){
+                        if (preg_match($exception, $match[0])) {
+                            $foundException = true;
+                            break;
+                        }
+                    }
+                    if (!$foundException){
+                        $issues []= new CodeIssue(
+                                'RegExFileNameCodeRule',
+                                $options->filePath,
+                                $rule->level,
+                                $rule->ruleID,
+                                false,
+                                $rule->description,
+                                0,
+                                0,
+                                $match[0],
+                                null
+                        );
+                    }
                 }
             }
         }

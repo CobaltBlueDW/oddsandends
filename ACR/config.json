@@ -26,8 +26,8 @@
         }
     },
     "allowedGenerators": {
-        "JSONGenerator": false,
-        "LocalGitGenerator": true
+        "JSONGenerator": true,
+        "LocalGitGenerator": false
     },
     
     "codeReviewers": {
