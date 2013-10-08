@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is used to produce reports in the JavaScript Object Notation file format
+ * This file is used to generate reports in an Xtensible Meta language file format
  *
  * @copyright Copyright 2012 Web Courseworks, Ltd.
  * @license   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0
@@ -23,15 +23,14 @@
  *
  * http://www.gnu.org/licenses/gpl-2.0.txt
  */
-
-require_once('Reporter.php');
+require_once('XMLSerializer.php');
 
 /**
- *  a class to generate JSON reports
+ *  a class to generate xml reports
  * 
  * @author David Wipperfurth 
  */
-class JSONReporter extends Reporter {
+class XMLReporter extends Reporter {
     
     protected $isFirst; //used to demark the first entry for properly capping the file/output
     
@@ -43,10 +42,10 @@ class JSONReporter extends Reporter {
     function open($filePath=null){
         if (isset($filePath)) {
             $this->fileHandle = fopen($filePath, 'w');
-            fwrite($this->fileHandle, "[\n\t");
+            fwrite($this->fileHandle, '<?xml version="1.0" encoding="UTF-8" ?>'."\n<issues>\n\t");
         } else {
             $this->fileHandle = null;
-            echo "[\n\t";
+            echo '<?xml version="1.0" encoding="UTF-8" ?>'."\n<issues>\n\t";
         }
         $this->isFirst = true;
     }
@@ -69,10 +68,10 @@ class JSONReporter extends Reporter {
      */
     function close(){
         if (isset($this->fileHandle)) {
-            fwrite($this->fileHandle, "\n]");
+            fwrite($this->fileHandle, "\n</issues>\n");
             fclose($this->fileHandle);  
-        }else{
-            echo "\n]";
+        } else {
+            echo "\n\t</issues>\n";
         }
         $this->fileHandle = null;
     }
@@ -85,11 +84,11 @@ class JSONReporter extends Reporter {
     private function pushToFile(array $issues){
         foreach($issues as $issue){
             if ($this->isFirst) {
-                fwrite($this->fileHandle, json_encode($issue));
+                fwrite($this->fileHandle, "<issue>".XMLSerializer::generateXML($issue)."</issue>");
                 $this->isFirst = false;
                 continue;
             }
-            fwrite($this->fileHandle, ",\n\t".json_encode($issue));
+            fwrite($this->fileHandle, "\n\t<issue>".XMLSerializer::generateXML($issue)."</issue>");
         }
     }
     
@@ -101,11 +100,11 @@ class JSONReporter extends Reporter {
     private function pushToStdIO(array $issues){
         foreach($issues as $issue){
             if ($this->isFirst) {
-                echo json_encode($issue);
+                echo "<issue>".XMLSerializer::generateXML($issue)."</issue>";
                 $this->isFirst = false;
                 continue;
             }
-            echo ",\n\t".json_encode($issue);
+            echo "\n\t<issue>".XMLSerializer::generateXML($issue)."</issue>";
         }
     }
     

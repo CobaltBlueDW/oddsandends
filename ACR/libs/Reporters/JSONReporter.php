@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is used to generate report in a "text"(human readable) format
+ * This file is used to produce reports in the JavaScript Object Notation file format
  *
  * @copyright Copyright 2012 Web Courseworks, Ltd.
  * @license   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0
@@ -24,14 +24,14 @@
  * http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-require_once('Reporter.php');
-
 /**
- *  a class to create text reports 
+ *  a class to generate JSON reports
  * 
- * @author David Wipperfurth
+ * @author David Wipperfurth 
  */
-class TextReporter extends Reporter {
+class JSONReporter extends Reporter {
+    
+    protected $isFirst; //used to demark the first entry for properly capping the file/output
     
     /**
      *  the first step in creating a report: opening a file/std out
@@ -41,10 +41,12 @@ class TextReporter extends Reporter {
     function open($filePath=null){
         if (isset($filePath)) {
             $this->fileHandle = fopen($filePath, 'w');
+            fwrite($this->fileHandle, "[\n\t");
         } else {
             $this->fileHandle = null;
+            echo "[\n\t";
         }
-        
+        $this->isFirst = true;
     }
     
     /**
@@ -64,7 +66,12 @@ class TextReporter extends Reporter {
      *  The last step in generating a report: closing the output stream. 
      */
     function close(){
-        if (isset($this->fileHandle)) fclose($this->fileHandle);  
+        if (isset($this->fileHandle)) {
+            fwrite($this->fileHandle, "\n]");
+            fclose($this->fileHandle);  
+        }else{
+            echo "\n]";
+        }
         $this->fileHandle = null;
     }
     
@@ -75,7 +82,12 @@ class TextReporter extends Reporter {
      */
     private function pushToFile(array $issues){
         foreach($issues as $issue){
-            fwrite($this->fileHandle, $issue."\n");
+            if ($this->isFirst) {
+                fwrite($this->fileHandle, json_encode($issue));
+                $this->isFirst = false;
+                continue;
+            }
+            fwrite($this->fileHandle, ",\n\t".json_encode($issue));
         }
     }
     
@@ -86,7 +98,12 @@ class TextReporter extends Reporter {
      */
     private function pushToStdIO(array $issues){
         foreach($issues as $issue){
-            echo $issue."\n";
+            if ($this->isFirst) {
+                echo json_encode($issue);
+                $this->isFirst = false;
+                continue;
+            }
+            echo ",\n\t".json_encode($issue);
         }
     }
     

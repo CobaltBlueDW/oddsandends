@@ -24,8 +24,6 @@
  * http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-require_once('Reporter.php');
-
 /**
  *  Can generate a report in CSV(comma seperated variables) format
  * 

@@ -86,6 +86,7 @@ require_once('core/CodeReviewer.php');
 require_once('core/Target.php');
 require_once('core/FileTarget.php');
 require_once('core/TargetGenerator.php');
+require_once('core/Reporter.php');
 
 //handle console command args
 $assocArgs = getopt("c:t:e:r:");
@@ -118,7 +119,7 @@ if (isset($assocArgs['r'])){
 if (empty($config) || !is_object($config)) throw new Exception("No configurations found!");
 if (isset($config->echoConfig) && $config->echoConfig == true) echo json_encode($config);
 
-
+/*
 if (!isset($config->reviewTargets)) throw new Exception("Required property reviewTarget is missing.");
 if (is_string($config->reviewTargets) && 
         strtolower(substr($config->reviewTargets, strrpos($config->reviewTargets, '.')))=='.json'){
@@ -129,6 +130,7 @@ if (is_string($config->reviewTargets)){
     $tempObj->soloTarget = $config->reviewTargets;
     $config->reviewTargets = $tempObj;
 }
+ */
 
 if (!isset($config->codeReviewers)) throw new Exception("Required property codeReviewers is missing.");
 if (isset($config->allowedReviews)){
@@ -167,27 +169,8 @@ foreach($codeReviewers as $reviewer){
 
 //setup output/reporter
 if (!isset($config->output->reportFormat)) $config->output->reportFormat = 'json';
-switch($config->output->reportFormat){
-    case 'text':
-        require_once('core/TextReporter.php');
-        $reporter = new TextReporter();
-        break;
-
-    case 'csv':
-        require_once('core/CSVReporter.php');
-        $reporter = new CSVReporter();
-        break;
-
-    case 'xml':
-        require_once('core/XMLReporter.php');
-        $reporter = new XMLReporter();
-        break;
-
-    case 'json':
-    default:
-        require_once('core/JSONReporter.php');
-        $reporter = new JSONReporter();  
-}
+if (!isset($config->Reporters->{$config->output->reportFormat})) throw new Exception("Specified Reporter '{$config->output->reportFormat}' was not found in Reporter list");
+$reporter = new $config->Reporters->{$config->output->reportFormat}->className($config->Reporters->{$config->output->reportFormat});
 if (isset($config->output->reportFile)) {
     $reporter->open($config->output->reportFile);
 } else {

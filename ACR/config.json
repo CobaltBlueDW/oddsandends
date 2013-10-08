@@ -1,18 +1,17 @@
 {
-    "DOCUMENTATION":{
+    "DOCUMENTATION": {
         "libDir": "the location of the ACR libraries. probably doesn't need changing.",
         "workDir": "the location where ACR can produce working temp files.  ACR will freely over-write any files in this directory.",
         "reviewTargets": "the default lit of files/directories to apply code review to.  Usually this is a reference to a seperate json file o that it may be managed seperately.",
         "codeReviewer": "this defines acceptable code reviewers, and the options for them.  Each name/value pair represents a different reviewer.  Each value should at the very least be an object with className and classFile value describing the CodeReview class responsible for managng that reviewer.  It may also contain other information to be pased to the CodeReviewer",
         "allowedRules": "decribes which rules in the codeReviewer set will be used when a eview is run.  This seperation/destinction exists to make using the same config file for multiple tasks easier.",
+        "codeReviewer": "this defines acceptable reporters, and the options for them.  Each name/value pair represents a different reporter.  Each value should at the very least be an object with className and classFile value describing the Reporter class responsible for managng that report.  It may also contain other information to be passed to the Reporter",
         "output": "If you want the output to come in the form of a file (instead of STDOUT), list a reportFile, and if you want the output to be in a form other than JSON, list a reportFormat"
     },
     "libDir":"./libs",
     "workDir":"./work",
     
-    "reviewTargets":"file://reviewTargets.json",
-    
-    "targetGenerators":{
+    "targetGenerators": {
         "JSONGenerator":{
             "className":"JSONGenerator",
             "classFile":"file://./libs/JSONGenerator/JSONGenerator.php",
@@ -30,7 +29,8 @@
         "JSONGenerator": false,
         "LocalGitGenerator": true
     },
-    "codeReviewers":{
+    
+    "codeReviewers": {
             "RegExCodeReview":"file://./libs/RCR/config.json",
             "FileNameCodeReview":"file://./libs/FileNameReviewer/config.json",
             "CodeSnifferCodeReviewer":{
@@ -67,7 +67,7 @@
                 }
             }
     },
-    "allowedReviews":{
+    "allowedReviews": {
         "RegExCodeReview": true,
         "FileNameReviewer": true,
         "CodeSnifferCodeReviewer": true,
@@ -77,8 +77,26 @@
         "PHPMDCodeReviewer": true
     },
     
-    "output":{
-        "_off_reportFile":"./work/codereview1.txt",
+    "Reporters": {
+        "text":{
+            "className":"TextReporter",
+            "classFile":"file://./libs/Reporters/TextReporter.php"
+        },
+        "csv":{
+            "className":"CSVReporter",
+            "classFile":"file://./libs/Reporters/CSVReporter.php"
+        },
+        "xml":{
+            "className":"XMLReporter",
+            "classFile":"file://./libs/Reporters/XMLReporter.php"
+        },
+        "json":{
+            "className":"JSONReporter",
+            "classFile":"file://./libs/Reporters/JSONReporter.php"
+        }
+    },
+    "output": {
+        "reportFile":"./work/codereview1.txt",
         "reportFormat":"text"
     }
 }

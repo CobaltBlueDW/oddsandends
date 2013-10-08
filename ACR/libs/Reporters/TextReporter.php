@@ -1,6 +1,6 @@
 <?php
 /**
- * This file is used to generate reports in an Xtensible Meta language file format
+ * This file is used to generate report in a "text"(human readable) format
  *
  * @copyright Copyright 2012 Web Courseworks, Ltd.
  * @license   http://www.gnu.org/licenses/gpl-2.0.txt GNU Public License 2.0
@@ -24,17 +24,12 @@
  * http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
-require_once('Reporter.php');
-require_once('XMLSerializer.php');
-
 /**
- *  a class to generate xml reports
+ *  a class to create text reports 
  * 
- * @author David Wipperfurth 
+ * @author David Wipperfurth
  */
-class XMLReporter extends Reporter {
-    
-    protected $isFirst; //used to demark the first entry for properly capping the file/output
+class TextReporter extends Reporter {
     
     /**
      *  the first step in creating a report: opening a file/std out
@@ -44,12 +39,10 @@ class XMLReporter extends Reporter {
     function open($filePath=null){
         if (isset($filePath)) {
             $this->fileHandle = fopen($filePath, 'w');
-            fwrite($this->fileHandle, '<?xml version="1.0" encoding="UTF-8" ?>'."\n<issues>\n\t");
         } else {
             $this->fileHandle = null;
-            echo '<?xml version="1.0" encoding="UTF-8" ?>'."\n<issues>\n\t";
         }
-        $this->isFirst = true;
+        
     }
     
     /**
@@ -69,12 +62,7 @@ class XMLReporter extends Reporter {
      *  The last step in generating a report: closing the output stream. 
      */
     function close(){
-        if (isset($this->fileHandle)) {
-            fwrite($this->fileHandle, "\n</issues>\n");
-            fclose($this->fileHandle);  
-        } else {
-            echo "\n\t</issues>\n";
-        }
+        if (isset($this->fileHandle)) fclose($this->fileHandle);  
         $this->fileHandle = null;
     }
     
@@ -85,12 +73,7 @@ class XMLReporter extends Reporter {
      */
     private function pushToFile(array $issues){
         foreach($issues as $issue){
-            if ($this->isFirst) {
-                fwrite($this->fileHandle, "<issue>".XMLSerializer::generateXML($issue)."</issue>");
-                $this->isFirst = false;
-                continue;
-            }
-            fwrite($this->fileHandle, "\n\t<issue>".XMLSerializer::generateXML($issue)."</issue>");
+            fwrite($this->fileHandle, $issue."\n");
         }
     }
     
@@ -101,12 +84,7 @@ class XMLReporter extends Reporter {
      */
     private function pushToStdIO(array $issues){
         foreach($issues as $issue){
-            if ($this->isFirst) {
-                echo "<issue>".XMLSerializer::generateXML($issue)."</issue>";
-                $this->isFirst = false;
-                continue;
-            }
-            echo "\n\t<issue>".XMLSerializer::generateXML($issue)."</issue>";
+            echo $issue."\n";
         }
     }
     
