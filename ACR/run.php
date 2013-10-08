@@ -178,10 +178,16 @@ if (isset($config->output->reportFile)) {
 }
 
 //setup target generators
+$targetFile = null;
+if (isset($config->output->targetListFile)) {
+    $targetFile = fopen($config->output->targetListFile, 'w');
+}
 
 //run automation
 foreach($targetGenerators as $generator){
+    if (!empty($targetFile)) fwrite ($targetFile, get_class($generator).":\n");
     while($target = $generator->next()){
+        if (!empty($targetFile)) fwrite ($targetFile, $target."\n");
         foreach($codeReviewers as $reviewer){
             $result = $reviewer->reviewTarget($target);
             if (is_array($result)) $reporter->push($result);
@@ -189,6 +195,7 @@ foreach($targetGenerators as $generator){
     }
 }
 
+if (!empty($targetFile)) fclose($targetFile);
 $reporter->close();
 
 //run postReview

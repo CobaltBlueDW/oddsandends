@@ -97,6 +97,7 @@
     },
     "output": {
         "reportFile":"./work/codereview1.txt",
-        "reportFormat":"text"
+        "reportFormat":"text",
+        "targetListFile":"./work/generated_targets.txt"
     }
 }
