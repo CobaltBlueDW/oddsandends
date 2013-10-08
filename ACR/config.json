@@ -14,20 +14,20 @@
     "targetGenerators": {
         "JSONGenerator":{
             "className":"JSONGenerator",
-            "classFile":"file://./libs/JSONGenerator/JSONGenerator.php",
+            "classFile":"file://./libs/Generators/JSONGenerator.php",
             "targets":"file://reviewTargets.json"
         },
         "LocalGitGenerator":{
             "className":"LocalGitGenerator",
-            "classFile":"file://./libs/LocalGitGenerator/LocalGitGenerator.php",
+            "classFile":"file://./libs/Generators/LocalGitGenerator.php",
             "repoDir":"../../broadway",
             "fromCommit":"origin/master",
             "toCommit":"HEAD"
         }
     },
     "allowedGenerators": {
-        "JSONGenerator": true,
-        "LocalGitGenerator": false
+        "JSONGenerator": false,
+        "LocalGitGenerator": true
     },
     
     "codeReviewers": {
