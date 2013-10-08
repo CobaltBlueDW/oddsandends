@@ -58,17 +58,16 @@ class RegExFileNameCodeRule extends CodeRule{
             $matchCount = preg_match_all($rule->regEx, $fileString, $ruleMatches, PREG_OFFSET_CAPTURE);
             if ($matchCount) {
                 foreach($ruleMatches[0] as $match){
-                    $char = $match[1] - $nIndecies[$line];
 
                     $issues []= new CodeIssue(
-                            'GenRegExCodeRule',
+                            'RegExFileNameCodeRule',
                             $options->filePath,
                             $rule->level,
                             $rule->ruleID,
                             false,
                             $rule->description,
                             0,
-                            $char,
+                            0,
                             $match[0],
                             null
                     );

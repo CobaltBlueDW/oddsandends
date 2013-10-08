@@ -27,8 +27,8 @@
         }
     },
     "allowedGenerators": {
-        "JSONGenerator": false,
-        "LocalGitGenerator": true
+        "JSONGenerator": true,
+        "LocalGitGenerator": false
     },
     "codeReviewers":{
             "RegExCodeReview":"file://./libs/RCR/config.json",
@@ -68,13 +68,13 @@
             }
     },
     "allowedReviews":{
-        "RegExCodeReview": true,
+        "RegExCodeReview": false,
         "FileNameReviewer": true,
-        "CodeSnifferCodeReviewer": true,
+        "CodeSnifferCodeReviewer": false,
         "ReformatCodeReviewer": false,
-        "LintModeCodeReviewer": true,
-        "PHPDocCodeReviewer": true,
-        "PHPMDCodeReviewer": true
+        "LintModeCodeReviewer": false,
+        "PHPDocCodeReviewer": false,
+        "PHPMDCodeReviewer": false
     },
     
     "output":{
