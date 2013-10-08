@@ -84,7 +84,7 @@ class TextReporter extends Reporter {
      * 
      * @param CodeIssue $issues an issue to write to StdOUT
      */
-    private function pushToStdIO(CodeIssue $issues){
+    private function pushToStdIO(array $issues){
         foreach($issues as $issue){
             echo $issue."\n";
         }

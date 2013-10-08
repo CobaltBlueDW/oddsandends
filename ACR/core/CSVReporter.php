@@ -136,7 +136,7 @@ class CSVReporter extends Reporter {
      * @param CodeIssue $issues an isue to use as a template for the header generation
      * @return string the generated heaer text
      */
-    protected function genHeader(CodeIssue $issues){
+    protected function genHeader(array $issues){
         $str = '';
         foreach($issues[0] as $key=>$value){
             $str = $str.'"'.$key.'",';

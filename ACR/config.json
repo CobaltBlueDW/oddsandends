@@ -27,8 +27,8 @@
         }
     },
     "allowedGenerators": {
-        "JSONGenerator": true,
-        "LocalGitGenerator": false
+        "JSONGenerator": false,
+        "LocalGitGenerator": true
     },
     "codeReviewers":{
             "RegExCodeReview":"file://./libs/RCR/config.json",
@@ -68,17 +68,17 @@
             }
     },
     "allowedReviews":{
-        "RegExCodeReview": false,
+        "RegExCodeReview": true,
         "FileNameReviewer": true,
-        "CodeSnifferCodeReviewer": false,
+        "CodeSnifferCodeReviewer": true,
         "ReformatCodeReviewer": false,
-        "LintModeCodeReviewer": false,
-        "PHPDocCodeReviewer": false,
-        "PHPMDCodeReviewer": false
+        "LintModeCodeReviewer": true,
+        "PHPDocCodeReviewer": true,
+        "PHPMDCodeReviewer": true
     },
     
     "output":{
-        "reportFile":"./work/codereview1.txt",
+        "_off_reportFile":"./work/codereview1.txt",
         "reportFormat":"text"
     }
 }
