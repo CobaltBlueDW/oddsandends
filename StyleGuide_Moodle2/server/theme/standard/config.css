@@ -1,0 +1,27 @@
+/**
+ * Configuration for Moodle's standard theme.
+ *
+ * This theme is the default theme within Moodle 2.0, it builds upon the base theme
+ * adding only CSS to create the simple look and feel Moodlers have come to recognise.
+ *
+ * For full information about creating Moodle themes, see:
+ *  http://docs.moodle.org/dev/Themes_2.0
+ *
+ * @package   moodlecore
+ * @copyright 2010 Sam Hemelryk
+ * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+ */
+
+@import url("style/core.css");     /** Must come first**/
+@import url("style/admin.css");
+@import url("style/blocks.css");
+@import url("style/calendar.css");
+@import url("style/course.css");
+@import url("style/user.css");
+@import url("style/dock.css");
+@import url("style/grade.css");
+@import url("style/message.css");
+@import url("style/modules.css");
+@import url("style/question.css");
+@import url("style/css3.css");      /** Sets up CSS 3 + browser specific styles **/
+
