@@ -58,8 +58,28 @@ class GenRegExCodeRule extends CodeRule{
             if (!isset($rule->description)) $rule->description = "Failed Rule ({$rule->regEx})";
             
             $matchCount = preg_match_all($rule->regEx, $fileString, $ruleMatches, PREG_OFFSET_CAPTURE);
+            $zHelper = new ZoneHelper($fileString);
             if ($matchCount) {
                 foreach($ruleMatches[0] as $match){
+                    //validate zones
+                    if (!empty($rule->ignoreZones)){
+                        if ($rule->ignoreZones->string && $zHelper->inString($match[1])) continue;
+                        if ($rule->ignoreZones->comment && $zHelper->inComment($match[1])) continue;
+                    }
+                    
+                    //validate against exceptions
+                    if (!empty($rule->except)){
+                        $foundException = false;
+                        foreach($rule->except as $exception){
+                            if (preg_match($exception, $match[0])){
+                                $foundException = false;
+                                break;
+                            }
+                        }
+                        if ($foundException) continue;
+                    }
+                    
+                    //grap line number and create issue
                     $line = RegExCodeReviewer::findInsertIndex($nIndecies, $match[1]);
                     $char = $match[1] - $nIndecies[$line];
 

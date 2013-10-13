@@ -10,6 +10,8 @@ require_once('ZoneInfo.php');
 class ZoneHelper {
     //list of zone encapsulating tokens
     static $zoneTokenMap = array(
+        '(' => true,
+        ')' => true,
         '{' => true,
         '}' => true,
         '/*' => true,
@@ -21,7 +23,7 @@ class ZoneHelper {
     );
     
     //Regex to find all zone tokens in a string
-    static $zoneTokenRegEx = "/{|}|\"|'|\n|\\/\\/|\\/\\*|\\*\\/|>>>|<<</";
+    static $zoneTokenRegEx = "/{|}|\"|'|\n|\\/\\/|\\/\\*|\\*\\/|\\(|\\)/";
     
     protected $zoneList = null;
     
@@ -74,14 +76,15 @@ class ZoneHelper {
             }
             
             // handle depth increase tokens
-            if ($match[0] == '{' || $match[0] == '"' || $match[0] == "'" ||
+            if ($match[0] == '(' || $match[0] == '{' || $match[0] == '"' || $match[0] == "'" ||
                 $match[0] == '//' || $match[0] == '/*') {
                 array_unshift($stack, new ZoneInfo($match[0], count($stack), $match[1]));
                 continue;
             }
             
             // handle properly formed closing tokens
-            if ($match[0] == '}' && $stack[0]->type == '{') {
+            if ( ($match[0] == '}' && $stack[0]->type == '{') ||
+                    ($match[0] == ')' && $stack[0]->type == '(')) {
                 $stack[0]->endIndex = $match[1];
                 $this->zoneList []= array_shift($stack);
             }
@@ -124,9 +127,33 @@ class ZoneHelper {
             if($this->zoneList[$point]->endIndex > $index){
                 $zones []= $this->zoneList[$point];
             }
+            $point++;
         }
         
         return $zones;
     }
+    
+    /**
+     * returns whether the given char index is in a tring or not
+     * 
+     * @param type $index
+     * @return bool true if the given point is in a string, false otherwise
+     */
+    public function inString($index){
+        $zoneStack = $this->findZonesAt($index);
+        if ($zoneStack[0]->type == "'" || $zoneStack[0]->type == '"') return true;
+        return false;
+    }
 
+    /**
+     * returns whether the given char index is in a comment or not
+     * 
+     * @param type $index
+     * @return bool true if the given point is in a comment, false otherwise
+     */
+    public function inComment($index){
+        $zoneStack = $this->findZonesAt($index);
+        if ($zoneStack[0]->type == "//" || $zoneStack[0]->type == '/*') return true;
+        return false;
+    }
 }

@@ -26,8 +26,8 @@
         }
     },
     "allowedGenerators": {
-        "JSONGenerator": false,
-        "LocalGitGenerator": true
+        "JSONGenerator": true,
+        "LocalGitGenerator": false
     },
     
     "codeReviewers": {
@@ -70,11 +70,11 @@
     "allowedReviews": {
         "RegExCodeReview": true,
         "FileNameReviewer": true,
-        "CodeSnifferCodeReviewer": true,
+        "CodeSnifferCodeReviewer": false,
         "ReformatCodeReviewer": false,
-        "LintModeCodeReviewer": true,
-        "PHPDocCodeReviewer": true,
-        "PHPMDCodeReviewer": true
+        "LintModeCodeReviewer": false,
+        "PHPDocCodeReviewer": false,
+        "PHPMDCodeReviewer": false
     },
     
     "Reporters": {
