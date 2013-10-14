@@ -78,6 +78,10 @@
         "mysql_stat":{"funcName":"mysql_stat", "reason":"Deprecated"},
         "mysql_tablename":{"funcName":"mysql_tablename", "reason":"Deprecated"},
         "mysql_thread_id":{"funcName":"mysql_thread_id", "reason":"Deprecated"},
-        "mysql_unbuffered_query":{"funcName":"mysql_unbuffered_query", "reason":"Deprecated"}
+        "mysql_unbuffered_query":{"funcName":"mysql_unbuffered_query", "reason":"Deprecated"},
+        
+        "array_filter":{"funcName":"array_filter", "reason":"Possibly Smelly Coding"},
+        "array_walk":{"funcName":"array_walk", "reason":"Possibly Smelly Coding"},
+        "array_reduce":{"funcName":"array_reduce", "reason":"Possibly Smelly Coding"}
     }
 }
