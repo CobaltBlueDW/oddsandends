@@ -24,6 +24,8 @@ class ZoneHelper {
     
     //Regex to find all zone tokens in a string
     static $zoneTokenRegEx = "/{|}|\"|'|\n|\\/\\/|\\/\\*|\\*\\/|\\(|\\)/";
+    static $checkForFunctionZone = "/function ([A-Z0-9a-z_\\-])[^\\;\\{\\}]*$/i";
+    static $checkForClassZone = "/class ([A-Z0-9a-z_\\-])[^\\;\\{\\}]*$/i";
     
     protected $zoneList = null;
     
@@ -40,15 +42,9 @@ class ZoneHelper {
         //die(json_encode($matches));
         
         $this->zoneList = array();
-        $stack = array();
+        $stack = array(new ZoneInfo('eof',0));  //push a file zone tag onto the stack so that stack is never empty
         $matches = $matches[0];  //sluff the extra arrays preg makes
         foreach($matches as $match){    //$match is ['match string', index]
-            // Handle empty stacks
-            if (empty($stack)) {
-                if ($match[0] != "\n") array_unshift($stack, new ZoneInfo($match[0], 0, $match[1]));
-                //print json_encode($stack);
-                continue;
-            }
             
             // Handle rule changing tokens
             if ($stack[0]->type == '"') {
@@ -74,8 +70,30 @@ class ZoneHelper {
                 }
                 continue;
             }
+               
+            //handle specialty depth increase tokens
+            if ($match[0] == '{') {
+                $newZoneInfo = new ZoneInfo($match[0], count($stack), $match[1]);
+                
+                print "\n--------------------\n";
+                print substr($string, 0, $match[1]);
+                print "\n---------------------\n";
+                
+                //check for this being a function
+                if ( preg_match(self::$checkForFunctionZone, substr($string, 0, $match[1]), $checkMatch) ) {
+                    $newZoneInfo->subType = 'function';
+                }
+                
+                //check for this being a class
+                if ( preg_match(self::$checkForClassZone, substr($string, 0, $match[1]), $checkMatch) ) {
+                    $newZoneInfo->subType = 'class';
+                }
+                
+                array_unshift($stack, $newZoneInfo);
+                continue;
+            }
             
-            // handle depth increase tokens
+            // handle other depth increase tokens
             if ($match[0] == '(' || $match[0] == '{' || $match[0] == '"' || $match[0] == "'" ||
                 $match[0] == '//' || $match[0] == '/*') {
                 array_unshift($stack, new ZoneInfo($match[0], count($stack), $match[1]));
@@ -95,9 +113,9 @@ class ZoneHelper {
         }
         
         // once done parsing the stack should be empty (all open tokens should have been closed)
-        if ($validateSyntax && !empty($stack)) throw new Exception("Expected closing token for '".$stack[0]->type."' at index ".$stack[0]->startIndex.".");
+        if ($validateSyntax && count($stack) > 1) throw new Exception("Expected closing token for '".$stack[0]->type."' at index ".$stack[0]->startIndex.".");
         
-        //die(json_encode($tokenList));
+        die(json_encode($this->zoneList));
         
         // the list is in closed-firt order, and I want it returd in opened-first order
         // so apply cludgy solution for now
