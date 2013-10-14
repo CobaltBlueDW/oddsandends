@@ -5,7 +5,11 @@
         "doubleNot":{
             "regEx":"/\\!\\!/",
             "description":"Use of double negative.",
-            "level":1
+            "level":1,
+            "ignoreZones": {
+                "string": true,
+                "comment": true
+            }
         }
     }
 }

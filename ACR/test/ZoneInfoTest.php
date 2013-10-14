@@ -7,9 +7,13 @@ class printer {
         // test
         // {
         print "}";
+        // testing !!
+        /* still testing !! */
+        print "!!";
+        if (!!true) print "this";
     }
 }
 
 $p = new printer();
-$p->printThis("{'/* test*/hat");
+$p->printThis("{'/* test*/hat}");
 
