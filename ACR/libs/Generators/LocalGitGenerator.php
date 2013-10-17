@@ -65,7 +65,7 @@ class LocalGitGenerator extends TargetGenerator{
         if (!is_dir($config->workDir)) throw new Exception("Working directory ({$config->workDir}) was not found.");
         
         $repoPath = rtrim($this->defaultOptions->repoDir, '/');
-        exec('git --git-dir="'.$repoPath.'/.git" diff --name-only "'.$this->defaultOptions->fromCommit.'"..."'.$this->defaultOptions->toCommit.'"', $results);
+        exec('git --git-dir="'.$repoPath.'/.git" diff --name-only --diff-filter=ACMRTUXB "'.$this->defaultOptions->fromCommit.'"..."'.$this->defaultOptions->toCommit.'"', $results);
         
         $opt = new stdClass();
         foreach($results as $key => $value){

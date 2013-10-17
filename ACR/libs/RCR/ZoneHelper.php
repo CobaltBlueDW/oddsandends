@@ -55,6 +55,14 @@ class ZoneHelper {
                 continue;
             }
             
+            if ($stack[0]->type == "'") {
+                if ($match[0] == "'" && substr($string, $match[1]-1, 1) != "\\") {
+                    $stack[0]->endIndex = $match[1];
+                    $this->zoneList []= array_shift($stack);
+                }
+                continue;
+            }
+            
             if ($stack[0]->type == '//') {
                 if ($match[0] == "\n") {
                     $stack[0]->endIndex = $match[1];
@@ -75,9 +83,9 @@ class ZoneHelper {
             if ($match[0] == '{') {
                 $newZoneInfo = new ZoneInfo($match[0], count($stack), $match[1]);
                 
-                print "\n--------------------\n";
-                print substr($string, 0, $match[1]);
-                print "\n---------------------\n";
+                //print "\n--------------------\n";
+                //print substr($string, 0, $match[1]);
+                //print "\n---------------------\n";
                 
                 //check for this being a function
                 if ( preg_match(self::$checkForFunctionZone, substr($string, 0, $match[1]), $checkMatch) ) {
@@ -115,7 +123,7 @@ class ZoneHelper {
         // once done parsing the stack should be empty (all open tokens should have been closed)
         if ($validateSyntax && count($stack) > 1) throw new Exception("Expected closing token for '".$stack[0]->type."' at index ".$stack[0]->startIndex.".");
         
-        die(json_encode($this->zoneList));
+        //die(json_encode($this->zoneList));
         
         // the list is in closed-firt order, and I want it returd in opened-first order
         // so apply cludgy solution for now
@@ -159,8 +167,11 @@ class ZoneHelper {
      */
     public function inString($index){
         $zoneStack = $this->findZonesAt($index);
-        if ($zoneStack[0]->type == "'" || $zoneStack[0]->type == '"') return true;
-        return false;
+        if (empty($zoneStack)) return false;
+        
+        if ($zoneStack[0]->type != "'" && $zoneStack[0]->type != '"') return false;
+        
+        return true;
     }
 
     /**
@@ -171,7 +182,10 @@ class ZoneHelper {
      */
     public function inComment($index){
         $zoneStack = $this->findZonesAt($index);
-        if ($zoneStack[0]->type == "//" || $zoneStack[0]->type == '/*') return true;
-        return false;
+        if (empty($zoneStack)) return false;
+        
+        if ($zoneStack[0]->type != "//" && $zoneStack[0]->type != '/*') return false;
+        
+        return true;
     }
 }
