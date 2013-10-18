@@ -59,10 +59,12 @@ class RegExFileNameCodeRule extends CodeRule{
             if ($matchCount) {
                 foreach($ruleMatches[0] as $match){
                     $foundException = false;
-                    foreach($rule->except as $exception){
-                        if (preg_match($exception, $match[0])) {
-                            $foundException = true;
-                            break;
+                    if (!empty($rule->except)) {
+                        foreach($rule->except as $exception){
+                            if (preg_match($exception, $match[0])) {
+                                $foundException = true;
+                                break;
+                            }
                         }
                     }
                     if (!$foundException){
